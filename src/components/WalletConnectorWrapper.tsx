@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react'
+import React, {useEffect, useState} from 'react'
 import {init, useConnectWallet, useNotifications} from '@web3-onboard/react'
 import injectedModule from '@web3-onboard/injected-wallets'
 import {ethers} from 'ethers'
@@ -7,6 +7,8 @@ import walletConnectModule from "@web3-onboard/walletconnect";
 import walletLinkModule from "@web3-onboard/walletlink";
 import {ConnectedChain, EIP1193Provider} from "@web3-onboard/core";
 import {Account} from "@web3-onboard/core/dist/types";
+import {Alert, Button, Card, Col, Container, Row} from 'react-bootstrap';
+
 
 const injected = injectedModule()
 const walletConnect = walletConnectModule();
@@ -83,6 +85,10 @@ export const WalletConnectorWrapper = () => {
         setPrimaryWallet // function that can set the primary wallet and/or primary account within that wallet. The wallet that is set needs to be passed in for the first parameter and if you would like to set the primary account, the address of that account also needs to be passed in
     ] = useConnectWallet()
 
+    const [addressInfo, setAddressInfo] = useState<Account | null>(null);
+    const [showAddressCard, setShowAddressCard] = useState(false);
+
+
     useEffect(() => {
         console.log(notifications)
     }, [notifications])
@@ -94,6 +100,28 @@ export const WalletConnectorWrapper = () => {
         ethersProvider = new ethers.providers.Web3Provider(wallet.provider, 'any')
         // walletService.setProvider(ethersProvider)
     }
+
+    useEffect(() => {
+        if (wallet && wallet.accounts.length > 0) {
+            setAddressInfo(wallet.accounts[0]);
+        }
+    }, [wallet]);
+
+    const connectWallet = () => {
+        connect();
+        setShowAddressCard(false);
+    };
+
+
+    const disconnectWallet = () => {
+        if (!wallet) throw Error("No wallet found");
+        disconnect({label: wallet.label});
+        setShowAddressCard(false);
+    };
+
+    const handleGetAddress = () => {
+        setShowAddressCard(true);
+    };
 
     const sendTransactionWithPreFlightNotifications = async (params: { toAddress: string; txAmount: number }) => {
         let balanceValue: string
@@ -133,18 +161,51 @@ export const WalletConnectorWrapper = () => {
 
 
     return (
-        <div>
-            <button
-                disabled={connecting}
-                onClick={() => (wallet ? disconnect({label: "Test Disconnect"}) : connect())}
-            >
-                {connecting ? 'connecting' : wallet ? 'disconnect' : 'connect'}
-            </button>
-            <button onClick={() => {
-                console.log(wallet?.accounts)
-            }}>
-                get address
-            </button>
-        </div>
-    )
-}
+        <Container className="my-4">
+            <Row className="justify-content-md-center">
+                <Col md={6}>
+                    <Card>
+                        <Card.Body>
+                            <Card.Title>Wallet Connection</Card.Title>
+                            {wallet ? (
+                                <Alert variant="success">
+                                    Connected to {wallet.label}
+                                </Alert>
+                            ) : (
+                                <Alert variant="warning">
+                                    Wallet not connected
+                                </Alert>
+                            )}
+                            <Button
+                                variant={wallet ? "danger" : "primary"}
+                                onClick={wallet ? disconnectWallet : connectWallet}
+                                disabled={connecting}
+                                className="me-2"
+                            >
+                                {connecting ? 'Connecting...' : wallet ? 'Disconnect' : 'Connect'}
+                            </Button>
+                            {wallet && (
+                                <Button variant="secondary" onClick={handleGetAddress}>
+                                    Get Address
+                                </Button>
+                            )}
+                        </Card.Body>
+                    </Card>
+
+                    {showAddressCard && addressInfo && (
+                        <Card className="mt-3">
+                            <Card.Body>
+                                <Card.Title>Address Information</Card.Title>
+                                <Card.Text>
+                                    Address: {addressInfo.address}
+                                    <br/>
+                                    Balance: {addressInfo.balance ? addressInfo.balance : 'Fetching...'}
+                                </Card.Text>
+                            </Card.Body>
+                        </Card>
+                    )}
+                </Col>
+            </Row>
+        </Container>
+    );
+};
