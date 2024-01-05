@@ -22,16 +22,6 @@ export class MintingService extends StatefulService<IMintingServiceState> {
         super(MintingService.initialState);
     }
 
-    // // New method to fetch token URI
-    // public async fetchTokenURI(contract: ethers.Contract, tokenId: number): Promise<string> {
-    //     try {
-    //         return await contract.tokenURI(tokenId);
-    //     } catch (e: any) {
-    //         console.error('Error fetching token URI:', e);
-    //         throw e;
-    //     }
-    // }
-
     public async mint(walletState: WalletState | null): Promise<string> {
         if (walletState) {
             const ethersProvider = new ethers.providers.Web3Provider(walletState.provider, 'any');
