@@ -46,7 +46,11 @@ export const Lab = () => {
                                 <Card.Text>
                                     Follow these steps to mint your Draftables NFT:
                                     <ol>
-                                        <li>Add the Sepolia Test Network to your MetaMask wallet.</li>
+                                        <li>Add the Sepolia Test Network to your MetaMask wallet. For detailed
+                                            instructions, visit <a
+                                                href="https://www.alchemy.com/overviews/how-to-add-sepolia-to-metamask"
+                                                target="_blank" rel="noopener noreferrer">Alchemy's guide</a>.
+                                        </li>
                                         <li>Obtain test funds for the Sepolia network at <a
                                             href="https://sepoliafaucet.com/" target="_blank" rel="noopener noreferrer">Sepolia
                                             Faucet</a>.
@@ -63,6 +67,7 @@ export const Lab = () => {
                         </Card>
                     </Col>
                 </Row>
+
 
                 <Row className="justify-content-md-center row-custom">
                     <Col md={6}>
