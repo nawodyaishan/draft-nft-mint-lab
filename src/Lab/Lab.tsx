@@ -10,10 +10,13 @@ export const Lab = () => {
     const [{wallet, connecting}] = useConnectWallet();
 
     const [showModal, setShowModal] = useState(false);
+    const [isMinting, setIsMinting] = useState(false);
 
     const handleMint = async () => {
         if (wallet) {
+            setIsMinting(true);
             const result = await mintingService.mint(wallet);
+            setIsMinting(false);
             if (result === "Success") {
                 setShowModal(true);
             }
@@ -36,8 +39,12 @@ export const Lab = () => {
                         <Card>
                             <Card.Body>
                                 <Card.Title>Mint Your NFT</Card.Title>
-                                <Button variant="primary" onClick={handleMint} disabled={!wallet || connecting}>
-                                    Mint Now
+                                <Button
+                                    variant="primary"
+                                    onClick={handleMint}
+                                    disabled={!wallet || connecting || isMinting}
+                                >
+                                    {isMinting ? 'Minting...' : 'Mint Now'}
                                 </Button>
                             </Card.Body>
                         </Card>
