@@ -27,6 +27,13 @@ module.exports = {
             },
             allowUnlimitedContractSize: false
         },
+        fuji: {
+            url: 'https://api.avax-test.network/ext/bc/C/rpc',
+            accounts: {
+                mnemonic: mnemonic
+            },
+            chainId: 43113
+        },
         eth: {
             url: 'https://mainnet.infura.io/v3/eff4b3f0d7954290a00d4a415f7ef1ee',
             loggingEnabled: true,
