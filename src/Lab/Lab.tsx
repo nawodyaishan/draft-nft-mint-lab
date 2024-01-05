@@ -1,36 +1,26 @@
-import React, {useEffect, useState} from "react";
-import {useService} from "react-service-locator";
-import {MintingService} from "../services/minting-service";
-import {WalletConnectorWrapper} from "../components/WalletConnectorWrapper";
-import {Button, Card, Col, Container, Navbar, Row} from "react-bootstrap";
-import {useConnectWallet} from "@web3-onboard/react";
+import React, {useState} from 'react';
+import {useService} from 'react-service-locator';
+import {MintingService} from '../services/minting-service';
+import {WalletConnectorWrapper} from '../components/WalletConnectorWrapper';
+import {Button, Card, Col, Container, Modal, Navbar, Row} from 'react-bootstrap';
+import {useConnectWallet} from '@web3-onboard/react';
 
 export const Lab = () => {
     const mintingService = useService(MintingService);
-    useEffect(() => {
-        console.log("Updated Ui");
-    }, [mintingService.state.amount]);
-
     const [{wallet, connecting}] = useConnectWallet();
 
-    // Synchronize Lab component's state with MintingService's state
-    const [mintAmount, setMintAmount] = useState(mintingService.mintAmount);
-    useEffect(() => {
-        setMintAmount(mintingService.mintAmount); // Update Lab's state when MintingService's state changes
-    }, [mintingService.mintAmount]);
+    const [showModal, setShowModal] = useState(false);
 
     const handleMint = async () => {
-        await mintingService.mint(wallet);
+        if (wallet) {
+            const result = await mintingService.mint(wallet);
+            if (result === "Success") {
+                setShowModal(true);
+            }
+        } else {
+            console.log('Wallet not connected');
+        }
     };
-
-    const incrementMintAmount = () => {
-        mintingService.setMintAmount(mintingService.mintAmount + 1);
-    };
-
-    const decrementMintAmount = () => {
-        mintingService.setMintAmount(Math.max(mintingService.mintAmount - 1, 0));
-    };
-
 
     return (
         <div>
@@ -46,16 +36,6 @@ export const Lab = () => {
                         <Card>
                             <Card.Body>
                                 <Card.Title>Mint Your NFT</Card.Title>
-                                <div className="d-flex align-items-center justify-content-center my-3">
-                                    <Button variant="outline-primary" onClick={decrementMintAmount}
-                                            disabled={mintAmount <= 0}>
-                                        -
-                                    </Button>
-                                    <div className="mx-3">{mintAmount}</div>
-                                    <Button variant="outline-primary" onClick={incrementMintAmount}>
-                                        +
-                                    </Button>
-                                </div>
                                 <Button variant="primary" onClick={handleMint} disabled={!wallet || connecting}>
                                     Mint Now
                                 </Button>
@@ -66,6 +46,21 @@ export const Lab = () => {
 
                 <WalletConnectorWrapper/>
             </Container>
+
+            <Modal show={showModal} onHide={() => setShowModal(false)}>
+                <Modal.Header closeButton>
+                    <Modal.Title>NFT Minted!</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    Your NFT has been successfully minted. View your minted NFT asset on <a
+                    href="https://testnets.opensea.io/" target="_blank" rel="noopener noreferrer">OpenSea</a>.
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShowModal(false)}>
+                        Close
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </div>
     );
 };

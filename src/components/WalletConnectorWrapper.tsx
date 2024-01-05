@@ -38,18 +38,11 @@ init({
         },
         {
             id: "0x3",
-            token: "tROP",
-            namespace: "evm",
-            label: "Ethereum Ropsten Testnet",
-            rpcUrl: AppConfig.ROPSTEN_RPC_URL
-        },
-        {
-            id: "0x4",
             token: "rETH",
             namespace: "evm",
-            label: "Ethereum Rinkeby Testnet",
-            rpcUrl: AppConfig.RINKEBY_RPC_URL
-        }
+            label: "Ethereum Sepolia Testnet",
+            rpcUrl: AppConfig.SEPOLIA_RPC_URL
+        },
     ],
     appMetadata: {
         name: "My App",
