@@ -35,7 +35,7 @@ contract Minter is ERC721Enumerable, ERC721URIStorage, Ownable {
     }
 
     constructor() ERC721("Minter", "MINTER") {
-        baseUri = 'ipfs://ipfs link for collection/';
+        baseUri = 'https://turquoise-rear-loon-357.mypinata.cloud/ipfs/QmZkAybk4nDVEEs192n2rMiWuuTyU4dbGELp3vLeFhXJ5y/';
         saleIsActive = false;
         MAX_NFTS = 500;
         maxPerWallet = 0;
