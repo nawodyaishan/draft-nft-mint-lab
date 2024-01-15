@@ -1,8 +1,0 @@
-.idea
-artifacts
-node_modules
-cache
-*.secret
-.secret
-*.chainId
-deployments
