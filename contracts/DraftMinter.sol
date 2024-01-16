@@ -9,9 +9,9 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 contract DraftMinter is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
     uint256 private _nextTokenId;
 
-    constructor(address initialOwner)
+    constructor()
     ERC721("DraftMinter", "DRFT")
-    Ownable(initialOwner)
+    Ownable(msg.sender)
     {}
 
     function _baseURI() internal pure override returns (string memory) {

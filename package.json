@@ -14,8 +14,8 @@
     "coverage": "yarn hardhat coverage",
     "typechain": "yarn hardhat typechain",
     "prettier": "prettier --write --plugin=prettier-plugin-solidity 'contracts/**/*.sol'",
-    "deploy": "yarn hardhat run --network hardhat scripts/deploy.ts",
-    "deploy:sepolia": "yarn hardhat run --network sepolia scripts/deploy.ts"
+    "deploy:draftminter:local": "yarn hardhat run --network hardhat scripts/deployDraftMinter.ts",
+    "deploy:draftminter:sepolia": "yarn hardhat run --network sepolia scripts/deployDraftMinter.ts"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-chai-matchers": "^2.0.0",
