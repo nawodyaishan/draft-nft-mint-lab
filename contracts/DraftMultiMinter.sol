@@ -41,7 +41,6 @@ contract DraftMultiMinter is
         STADIUM_VILLAGE_BUILDING
     }
 
-    mapping(TokenType => uint256) private tokenTypeToId;
     mapping(TokenType => uint256) private nftSupply;
 
     // ------------------
@@ -73,12 +72,6 @@ contract DraftMultiMinter is
         Ownable(msg.sender)
     {
         baseMetadataURI = "https://turquoise-rear-loon-357.mypinata.cloud/ipfs/QmahUaDqT8b4dMcibzZJzVy2edV2rTU6sKDUqcNavJEMJ7/";
-        tokenTypeToId[TokenType.IN_GAME_CURRENCY] = FT_TYPE_START;
-        tokenTypeToId[TokenType.EXPERIENCE_BOOST] = FT_TYPE_START + 1;
-        tokenTypeToId[TokenType.PLAYER_CARD] = NFT_TYPE_START;
-        tokenTypeToId[TokenType.STADIUM_VILLAGE_BUILDING] =
-            NFT_TYPE_START +
-            10000;
     }
 
     // ------------------
@@ -251,15 +244,6 @@ contract DraftMultiMinter is
     // ------------------
     // Getter Functions
     // ------------------
-
-    /**
-     * @dev Gets the token ID for a given token type.
-     * @param tokenType The TokenType for which to get the ID.
-     * @return uint256 The token ID associated with the given token type.
-     */
-    function getTokenId(TokenType tokenType) public view returns (uint256) {
-        return tokenTypeToId[tokenType];
-    }
 
     /**
      * @dev Gets the current supply for a given NFT type.

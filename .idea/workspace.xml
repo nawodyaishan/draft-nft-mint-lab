@@ -6,7 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="1de01dba-59ce-47b0-9d6c-4f15a8ccf782" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/contracts/DraftMultiMinter.sol" beforeDir="false" afterPath="$PROJECT_DIR$/contracts/DraftMultiMinter.sol" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -109,7 +108,7 @@
       <updated>1705518287720</updated>
       <workItem from="1705518289213" duration="4129000" />
       <workItem from="1705522639719" duration="4000" />
-      <workItem from="1705522652100" duration="3008000" />
+      <workItem from="1705522652100" duration="5014000" />
     </task>
     <task id="LOCAL-00001" summary="feat: update mint nft supply logic">
       <option name="closed" value="true" />
@@ -143,7 +142,15 @@
       <option name="project" value="LOCAL" />
       <updated>1705524683076</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="feat: update token types and erros">
+      <option name="closed" value="true" />
+      <created>1705525703890</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1705525703890</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -156,6 +163,7 @@
     <MESSAGE value="feat: add getter functions" />
     <MESSAGE value="feat: add getTokenTypeFromId and update NFT mint logic with metadata" />
     <MESSAGE value="feat: update uri" />
-    <option name="LAST_COMMIT_MESSAGE" value="feat: update uri" />
+    <MESSAGE value="feat: update token types and erros" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat: update token types and erros" />
   </component>
 </project>
