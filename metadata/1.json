@@ -1,0 +1,9 @@
+{
+  "name": "DRFT Token",
+  "description": "The official in-game currency of Draftables MVP.",
+  "image": "https://turquoise-rear-loon-357.mypinata.cloud/ipfs/QmZZCRcz97v9zUF28i7Kax7yn6wsbyEi8LiZWyyqvxJadT/1.jpeg",
+  "properties": {
+    "tokenType": "Fungible",
+    "usage": "Used for purchasing in-game items and upgrades."
+  }
+}

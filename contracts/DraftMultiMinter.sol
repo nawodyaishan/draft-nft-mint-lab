@@ -77,11 +77,22 @@ ERC1155Supply
      * @return string URI of the given token ID.
      */
     function uri(uint256 tokenId) public view override returns (string memory) {
-        if (tokenId == PLAYER_CARD || tokenId == STADIUM_VILLAGE_BUILDING) {
+        if (tokenId == PLAYER_CARD) {
             return
                 string(
                 abi.encodePacked(
                     s_baseMetadataURI,
+                    "p-",
+                    Strings.toString(tokenId),
+                    ".json"
+                )
+            );
+        } else if (tokenId == STADIUM_VILLAGE_BUILDING) {
+            return
+                string(
+                abi.encodePacked(
+                    s_baseMetadataURI,
+                    "sb-",
                     Strings.toString(tokenId),
                     ".json"
                 )
@@ -185,6 +196,25 @@ ERC1155Supply
         _mintBatch(account, ids, amounts, data);
         emit NFTBatchMinted(account, ids);
     }
+
+    function airDropFT(
+        uint256 tokenId,
+        address[] calldata recipients,
+        uint256 amount
+    ) external onlyOwner {
+        // Check if the token type is valid for FTs
+        require(
+            tokenId == IN_GAME_CURRENCY || tokenId == EXPERIENCE_BOOST,
+            "Invalid FT Type"
+        );
+        for (uint i = 0; i < recipients.length; i++) {
+            _safeTransferFrom(msg.sender, recipients[i], tokenId, amount, "");
+        }
+    }
+
+    // ------------------
+    // Explicit overrides
+    // ------------------
 
     /**
      * @dev Internal function to update the state on token transfers.

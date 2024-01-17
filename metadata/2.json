@@ -1,0 +1,11 @@
+{
+  "name": "Experience Boost",
+  "description": "Boosts player experience points by a significant percentage for a limited time.",
+  "image": "https://turquoise-rear-loon-357.mypinata.cloud/ipfs/QmZZCRcz97v9zUF28i7Kax7yn6wsbyEi8LiZWyyqvxJadT/2.jpeg",
+  "properties": {
+    "tokenType": "Fungible",
+    "boostAmount": "50%",
+    "duration": "24 hours",
+    "effect": "Increases experience points gained in-game."
+  }
+}
