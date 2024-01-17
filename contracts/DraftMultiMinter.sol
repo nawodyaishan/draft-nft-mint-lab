@@ -48,12 +48,10 @@ contract DraftMultiMinter is
     // Custom Errors
     // ------------------
 
-    error InvalidTokenId(uint256 InvalidId);
-    error InvalidFTType();
-    error InvalidNFTType();
-    error MaxNFTSupplyReached();
-    error URIUpdateError();
-    error MintingError();
+    error InvalidTokenId(uint256 invalidId);
+    error InvalidFTType(uint256 ftType);
+    error InvalidNFTType(uint256 tokenType);
+    error MaxNFTSupplyReached(TokenType tokenType);
 
     // ------------------
     // Events
@@ -74,7 +72,7 @@ contract DraftMultiMinter is
         )
         Ownable(msg.sender)
     {
-        baseMetadataURI = "https://turquoise-rear-loon-357.mypinata.cloud/ipfs/QmahUaDqT8b4dMcibzZJzVy2edV2rTU6sKDUqcNavJEMJ7/{id}.json";
+        baseMetadataURI = "https://turquoise-rear-loon-357.mypinata.cloud/ipfs/QmahUaDqT8b4dMcibzZJzVy2edV2rTU6sKDUqcNavJEMJ7/";
         tokenTypeToId[TokenType.IN_GAME_CURRENCY] = FT_TYPE_START;
         tokenTypeToId[TokenType.EXPERIENCE_BOOST] = FT_TYPE_START + 1;
         tokenTypeToId[TokenType.PLAYER_CARD] = NFT_TYPE_START;
@@ -128,6 +126,7 @@ contract DraftMultiMinter is
         }
         revert InvalidTokenId(tokenId);
     }
+
     // ------------------
     // Token Minting
     // ------------------
@@ -145,8 +144,8 @@ contract DraftMultiMinter is
         uint256 amount,
         bytes memory data
     ) public onlyOwner {
-        if (!(ftType >= FT_TYPE_START && ftType <= FT_TYPE_END)) {
-            revert InvalidFTType();
+        if (ftType != 1 && ftType != 2) {
+            revert InvalidFTType(ftType);
         }
         _mint(account, ftType, amount, data);
         emit FTMinted(account, ftType, amount);
@@ -163,24 +162,44 @@ contract DraftMultiMinter is
         uint256 tokenType,
         bytes memory data
     ) public onlyOwner {
-        TokenType typeEnum = getTokenTypeFromId(tokenType);
-        require(
-            typeEnum == TokenType.PLAYER_CARD ||
-                typeEnum == TokenType.STADIUM_VILLAGE_BUILDING,
-            "Invalid NFT Type"
-        );
-
+        if (tokenType != 3 && tokenType != 4) {
+            revert InvalidNFTType(tokenType);
+        }
+        TokenType typeEnum = TokenType(tokenType - 1);
         uint256 currentSupply = nftSupply[typeEnum];
-        require(currentSupply < MAX_NFT_SUPPLY, "Max NFT Supply Reached");
-        nftSupply[typeEnum] = currentSupply + 1;
-
+        if (currentSupply >= MAX_NFT_SUPPLY) {
+            revert MaxNFTSupplyReached(typeEnum);
+        }
         uint256 tokenId = (
-            typeEnum == TokenType.PLAYER_CARD
-                ? PLAYER_CARD_START
-                : STADIUM_VILLAGE_START
+            tokenType == 3 ? PLAYER_CARD_START : STADIUM_VILLAGE_START
         ) + currentSupply;
+        nftSupply[typeEnum] = currentSupply + 1;
         _mint(account, tokenId, 1, data);
         emit NFTMinted(account, tokenId, 1);
+    }
+
+    /**
+     * @dev Determines the token type based on a given token ID.
+     * @param tokenId The ID of the token.
+     * @return TokenType The type of the token.
+     */
+    function getTokenTypeFromId(
+        uint256 tokenId
+    ) public pure returns (TokenType) {
+        if (tokenId == 1 || tokenId == 2) {
+            return TokenType(tokenId - 1);
+        } else if (
+            tokenId >= PLAYER_CARD_START &&
+            tokenId < PLAYER_CARD_START + MAX_NFT_SUPPLY
+        ) {
+            return TokenType.PLAYER_CARD;
+        } else if (
+            tokenId >= STADIUM_VILLAGE_START &&
+            tokenId < STADIUM_VILLAGE_START + MAX_NFT_SUPPLY
+        ) {
+            return TokenType.STADIUM_VILLAGE_BUILDING;
+        }
+        revert InvalidTokenId(tokenId);
     }
 
     /**
@@ -195,30 +214,6 @@ contract DraftMultiMinter is
      */
     function unpause() public onlyOwner {
         _unpause();
-    }
-
-    /**
-     * @dev Determines the token type based on a given token ID.
-     * @param tokenId The ID of the token.
-     * @return TokenType The type of the token.
-     */
-    function getTokenTypeFromId(
-        uint256 tokenId
-    ) public pure returns (TokenType) {
-        if (tokenId == FT_TYPE_START) {
-            return TokenType.IN_GAME_CURRENCY;
-        } else if (tokenId == FT_TYPE_START + 1) {
-            return TokenType.EXPERIENCE_BOOST;
-        } else if (
-            tokenId >= NFT_TYPE_START && tokenId < NFT_TYPE_START + 10000
-        ) {
-            return TokenType.PLAYER_CARD;
-        } else if (
-            tokenId >= NFT_TYPE_START + 10000 && tokenId <= NFT_TYPE_END
-        ) {
-            return TokenType.STADIUM_VILLAGE_BUILDING;
-        }
-        revert InvalidTokenId(tokenId);
     }
 
     // ------------------
