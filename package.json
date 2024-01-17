@@ -15,7 +15,11 @@
     "typechain": "yarn hardhat typechain",
     "prettier": "prettier --write --plugin=prettier-plugin-solidity 'contracts/**/*.sol'",
     "deploy:draftminter:local": "yarn hardhat run --network hardhat scripts/deployDraftMinter.ts",
-    "deploy:draftminter:sepolia": "yarn hardhat run --network sepolia scripts/deployDraftMinter.ts"
+    "deploy:draftminter:sepolia": "yarn hardhat run --network sepolia scripts/deployDraftMinter.ts",
+    "deploy:draftminter:fuji": "yarn hardhat run --network fuji scripts/deployDraftMinter.ts",
+    "deploy:draftmultiminter:local": "yarn hardhat run --network hardhat scripts/deployDraftMultiMinter.ts",
+    "deploy:draftmultiminter:sepolia": "yarn hardhat run --network sepolia scripts/deployDraftMultiMinter.ts",
+    "deploy:draftmultiminter:fuji": "yarn hardhat run --network fuji scripts/deployDraftMultiMinter.ts"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-chai-matchers": "^2.0.0",
