@@ -64,10 +64,13 @@ ERC1155Supply
     // Constructor
     // ------------------
 
-    constructor(
-        string memory _baseMetadataURI
-    ) ERC1155(_baseMetadataURI) Ownable(msg.sender) {
-        baseMetadataURI = _baseMetadataURI;
+    constructor()
+    ERC1155(
+    "https://turquoise-rear-loon-357.mypinata.cloud/ipfs/QmWz9pE8uKrX2dasG9pCmgxR9g7SSHpoDYan7KLz8332Sn/{id}.json"
+    )
+    Ownable(msg.sender)
+    {
+        baseMetadataURI = "https://turquoise-rear-loon-357.mypinata.cloud/ipfs/QmWz9pE8uKrX2dasG9pCmgxR9g7SSHpoDYan7KLz8332Sn/{id}.json";
         tokenTypeToId[TokenType.IN_GAME_CURRENCY] = FT_TYPE_START;
         tokenTypeToId[TokenType.EXPERIENCE_BOOST] = FT_TYPE_START + 1;
         tokenTypeToId[TokenType.PLAYER_CARD] = NFT_TYPE_START;
@@ -217,12 +220,12 @@ ERC1155Supply
     // Utility Functions
     // ------------------
 
-    /**
+    /*
      * @dev Returns the URI of the contract's metadata.
      * @return string The URI of the contract's collection metadata.
      */
     function contractURI() public pure returns (string memory collectionURI) {
-        collectionURI = "https://turquoise-rear-loon-357.mypinata.cloud/ipfs/QmTrUpcUZQ1iCtMo6Jv9CsAhkQaM9Wo5rYmjC4h2XdAGFh/collection.json";
+        collectionURI = "https://turquoise-rear-loon-357.mypinata.cloud/ipfs/QmWz9pE8uKrX2dasG9pCmgxR9g7SSHpoDYan7KLz8332Sn/collection.json";
     }
 
     // ------------------
@@ -243,5 +246,52 @@ ERC1155Supply
         uint256[] memory values
     ) internal override(ERC1155, ERC1155Supply, ERC1155Pausable) {
         super._update(from, to, ids, values);
+    }
+
+    // ------------------
+    // Getter Functions
+    // ------------------
+
+    /**
+     * @dev Gets the token ID for a given token type.
+     * @param tokenType The TokenType for which to get the ID.
+     * @return uint256 The token ID associated with the given token type.
+     */
+    function getTokenId(TokenType tokenType) public view returns (uint256) {
+        return tokenTypeToId[tokenType];
+    }
+
+    /**
+     * @dev Gets the current supply for a given NFT type.
+     * @param tokenType The TokenType for which to get the supply.
+     * @return uint256 The current supply of the given NFT type.
+     */
+    function getCurrentNFTSupply(
+        TokenType tokenType
+    ) public view returns (uint256) {
+        require(
+            tokenType == TokenType.PLAYER_CARD ||
+            tokenType == TokenType.STADIUM_VILLAGE_BUILDING,
+            "Invalid NFT Type"
+        );
+        return nftSupply[tokenType];
+    }
+
+    /**
+     * @dev Checks if a given token ID is a fungible token.
+     * @param tokenId The ID of the token to check.
+     * @return bool True if the token is a fungible token, false otherwise.
+     */
+    function isFungibleToken(uint256 tokenId) public pure returns (bool) {
+        return tokenId >= FT_TYPE_START && tokenId <= FT_TYPE_END;
+    }
+
+    /**
+     * @dev Checks if a given token ID is a non-fungible token.
+     * @param tokenId The ID of the token to check.
+     * @return bool True if the token is a non-fungible token, false otherwise.
+     */
+    function isNonFungibleToken(uint256 tokenId) public pure returns (bool) {
+        return tokenId >= NFT_TYPE_START && tokenId <= NFT_TYPE_END;
     }
 }
