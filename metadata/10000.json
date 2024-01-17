@@ -1,0 +1,10 @@
+{
+    "name": "State-of-the-Art Gym",
+    "description": "A modern gym facility equipped with the latest fitness technology.",
+    "image": "https://turquoise-rear-loon-357.mypinata.cloud/ipfs/QmZZCRcz97v9zUF28i7Kax7yn6wsbyEi8LiZWyyqvxJadT/sb-1.jpeg",
+    "attributes": [
+        {"trait_type": "Building Type", "value": "Gym Building"},
+        {"trait_type": "Capacity", "value": 200},
+        {"trait_type": "Amenities", "value": "Advanced Equipment, Spa Area"}
+    ]
+}

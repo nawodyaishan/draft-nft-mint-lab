@@ -1,0 +1,15 @@
+{
+    "name": "Liam Brown - Skilled Linebacker",
+    "description": "An agile linebacker known for his quick reflexes and strategic play.",
+    "image": "https://turquoise-rear-loon-357.mypinata.cloud/ipfs/QmZZCRcz97v9zUF28i7Kax7yn6wsbyEi8LiZWyyqvxJadT/p-4.jpeg",
+    "attributes": [
+        {"trait_type": "Position", "value": "Linebacker"},
+        {"trait_type": "Strength", "value": 80},
+        {"trait_type": "Stamina", "value": 88},
+        {"trait_type": "Speed", "value": 85},
+        {"trait_type": "Agility", "value": 87},
+        {"trait_type": "Awareness", "value": 90},
+        {"trait_type": "Eye Shape", "value": "EyeShapes3"},
+        {"trait_type": "Outfit", "value": "Outfit5"}
+    ]
+}

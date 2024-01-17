@@ -1,0 +1,15 @@
+{
+    "name": "Alex Johnson - Dynamic Receiver",
+    "description": "A versatile receiver known for his agility and hand-eye coordination.",
+    "image": "https://turquoise-rear-loon-357.mypinata.cloud/ipfs/QmZZCRcz97v9zUF28i7Kax7yn6wsbyEi8LiZWyyqvxJadT/p-2.jpeg",
+    "attributes": [
+        {"trait_type": "Position", "value": "Receiver"},
+        {"trait_type": "Strength", "value": 70},
+        {"trait_type": "Stamina", "value": 85},
+        {"trait_type": "Speed", "value": 90},
+        {"trait_type": "Agility", "value": 95},
+        {"trait_type": "Awareness", "value": 82},
+        {"trait_type": "Hair Color", "value": "HairColorPalette2"},
+        {"trait_type": "Tattoos", "value": "Tattoos3"}
+    ]
+}
