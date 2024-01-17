@@ -1,0 +1,15 @@
+{
+    "name": "Michael Carter - Defensive Lineman",
+    "description": "A strong and formidable defensive lineman with a record of outstanding tackles.",
+    "image": "https://turquoise-rear-loon-357.mypinata.cloud/ipfs/QmZZCRcz97v9zUF28i7Kax7yn6wsbyEi8LiZWyyqvxJadT/p-3.jpeg",
+    "attributes": [
+        {"trait_type": "Position", "value": "Defensive Lineman"},
+        {"trait_type": "Strength", "value": 95},
+        {"trait_type": "Stamina", "value": 80},
+        {"trait_type": "Speed", "value": 60},
+        {"trait_type": "Agility", "value": 65},
+        {"trait_type": "Awareness", "value": 85},
+        {"trait_type": "Nose Shape", "value": "NoseShapes2"},
+        {"trait_type": "Mouth Shape", "value": "MouthShapes1"}
+    ]
+}

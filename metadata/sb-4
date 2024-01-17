@@ -1,0 +1,10 @@
+{
+    "name": "Grand Stadium",
+    "description": "A magnificent stadium with a large seating capacity and modern amenities.",
+    "image": "https://turquoise-rear-loon-357.mypinata.cloud/ipfs/QmZZCRcz97v9zUF28i7Kax7yn6wsbyEi8LiZWyyqvxJadT/sb-4.jpeg",
+    "attributes": [
+        {"trait_type": "Building Type", "value": "Stadium Building"},
+        {"trait_type": "Seating Capacity", "value": 80000},
+        {"trait_type": "Facilities", "value": "Luxury Boxes, Giant Screens"}
+    ]
+}

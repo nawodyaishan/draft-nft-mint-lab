@@ -1,0 +1,15 @@
+{
+    "name": "John Smith - Elite Quarterback",
+    "description": "An elite quarterback with exceptional skills and experience.",
+    "image": "https://turquoise-rear-loon-357.mypinata.cloud/ipfs/QmZZCRcz97v9zUF28i7Kax7yn6wsbyEi8LiZWyyqvxJadT/1.jpeg",
+    "attributes": [
+        {"trait_type": "Position", "value": "Quarterback"},
+        {"trait_type": "Strength", "value": 85},
+        {"trait_type": "Stamina", "value": 90},
+        {"trait_type": "Speed", "value": 75},
+        {"trait_type": "Agility", "value": 80},
+        {"trait_type": "Awareness", "value": 88},
+        {"trait_type": "Hair Style", "value": "HairStyles3"},
+        {"trait_type": "Skin Color", "value": "SkinColor3"}
+    ]
+}

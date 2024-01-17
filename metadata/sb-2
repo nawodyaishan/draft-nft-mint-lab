@@ -1,0 +1,10 @@
+{
+    "name": "Elite Clubhouse",
+    "description": "A luxurious clubhouse providing top-notch facilities for players and VIP guests.",
+    "image": "https://turquoise-rear-loon-357.mypinata.cloud/ipfs/QmZZCRcz97v9zUF28i7Kax7yn6wsbyEi8LiZWyyqvxJadT/sb-2.jpeg",
+    "attributes": [
+        {"trait_type": "Building Type", "value": "Club Building"},
+        {"trait_type": "Capacity", "value": 500},
+        {"trait_type": "Features", "value": "VIP Lounges, Conference Rooms"}
+    ]
+}
