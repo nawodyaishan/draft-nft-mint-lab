@@ -113,6 +113,33 @@ ERC1155Supply
     }
 
     /**
+     * @dev Mints fungible tokens (FTs).
+     * @notice This function allows minting of specified fungible token types.
+     * @param account The address to receive the minted tokens.
+     * @param ftType The type of the fungible token to mint.
+     * @param amount The amount of the fungible tokens to mint.
+     * @param data Additional data with no specified format, sent in call to `_mint`.
+     */
+    function mintFT(
+        address account,
+        uint256 ftType,
+        uint256 amount,
+        bytes memory data
+    ) public onlyOwner {
+        // Check if the token type is valid for FTs
+        require(
+            ftType == IN_GAME_CURRENCY || ftType == EXPERIENCE_BOOST,
+            "Invalid FT Type"
+        );
+
+        // Perform the minting of fungible tokens
+        _mint(account, ftType, amount, data);
+
+        // Emit an event for minting FTs (optional, can be customized or removed)
+        // emit FTMinted(account, ftType, amount);
+    }
+
+    /**
      * @dev Mints a single new NFT.
      * @param account Address of the NFT recipient.
      * @param nftType Type of the NFT to mint.
