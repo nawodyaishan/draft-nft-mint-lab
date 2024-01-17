@@ -26,8 +26,10 @@ ERC1155Supply
 
     uint256 private constant FT_TYPE_START = 1;
     uint256 private constant FT_TYPE_END = 100;
-    uint256 private constant NFT_TYPE_START = 1001;
-    uint256 private constant NFT_TYPE_END = 20000;
+    uint256 private constant PLAYER_CARD_START = 1000; // Starting from 1000 for PLAYER_CARD
+    uint256 private constant STADIUM_VILLAGE_START = 10000; // Starting from 10000 for STADIUM_VILLAGE_BUILDING
+    uint256 private constant MAX_NFT_SUPPLY = 5; // Maximum supply for each NFT type
+
     string private baseMetadataURI;
 
     enum TokenType {
@@ -107,7 +109,12 @@ ERC1155Supply
                     ".json"
                 )
             );
-        } else if (tokenId >= NFT_TYPE_START && tokenId <= NFT_TYPE_END) {
+        } else if (
+            (tokenId >= PLAYER_CARD_START &&
+                tokenId < PLAYER_CARD_START + MAX_NFT_SUPPLY) ||
+            (tokenId >= STADIUM_VILLAGE_START &&
+                tokenId < STADIUM_VILLAGE_START + MAX_NFT_SUPPLY)
+        ) {
             return
                 string(
                 abi.encodePacked(
@@ -119,7 +126,6 @@ ERC1155Supply
         }
         revert InvalidTokenId(tokenId);
     }
-
     // ------------------
     // Token Minting
     // ------------------
@@ -147,26 +153,32 @@ ERC1155Supply
     /**
      * @dev Mints a non-fungible token.
      * @param account The address that will receive the minted NFT.
-     * @param nftType The type of the NFT to be minted.
+     * @param tokenType The type of the NFT to be minted.
      * @param data Additional data that will be passed to the minting function.
      */
     function mintNFT(
         address account,
-        uint256 nftType,
+        uint256 tokenType,
         bytes memory data
     ) public onlyOwner {
-        if (!(nftType >= NFT_TYPE_START && nftType <= NFT_TYPE_END)) {
-            revert InvalidNFTType();
-        }
-        TokenType tokenType = getTokenTypeFromId(nftType);
-        uint256 currentSupply = nftSupply[tokenType];
-        if (currentSupply >= 5) {
-            revert MaxNFTSupplyReached();
-        }
-        nftSupply[tokenType] = currentSupply + 1;
-        uint256 tokenId = nftType + currentSupply;
+        TokenType typeEnum = getTokenTypeFromId(tokenType);
+        require(
+            typeEnum == TokenType.PLAYER_CARD ||
+            typeEnum == TokenType.STADIUM_VILLAGE_BUILDING,
+            "Invalid NFT Type"
+        );
+
+        uint256 currentSupply = nftSupply[typeEnum];
+        require(currentSupply < MAX_NFT_SUPPLY, "Max NFT Supply Reached");
+        nftSupply[typeEnum] = currentSupply + 1;
+
+        uint256 tokenId = (
+            typeEnum == TokenType.PLAYER_CARD
+                ? PLAYER_CARD_START
+                : STADIUM_VILLAGE_START
+        ) + currentSupply;
         _mint(account, tokenId, 1, data);
-        emit NFTMinted(account, nftType, tokenId);
+        emit NFTMinted(account, tokenId, 1);
     }
 
     /**
@@ -191,29 +203,20 @@ ERC1155Supply
     function getTokenTypeFromId(
         uint256 tokenId
     ) public view returns (TokenType) {
-        if (tokenId >= FT_TYPE_START && tokenId <= FT_TYPE_END) {
-            // Iterate through FT types
-            if (tokenId == tokenTypeToId[TokenType.IN_GAME_CURRENCY]) {
-                return TokenType.IN_GAME_CURRENCY;
-            } else if (tokenId == tokenTypeToId[TokenType.EXPERIENCE_BOOST]) {
-                return TokenType.EXPERIENCE_BOOST;
-            }
-        } else if (tokenId >= NFT_TYPE_START && tokenId <= NFT_TYPE_END) {
-            // For NFTs, determine type based on the defined range
-            if (
-                tokenId >= tokenTypeToId[TokenType.PLAYER_CARD] &&
-                tokenId < tokenTypeToId[TokenType.PLAYER_CARD] + 10000
-            ) {
-                return TokenType.PLAYER_CARD;
-            } else if (
-                tokenId >= tokenTypeToId[TokenType.STADIUM_VILLAGE_BUILDING] &&
-                tokenId <
-                tokenTypeToId[TokenType.STADIUM_VILLAGE_BUILDING] + 10000
-            ) {
-                return TokenType.STADIUM_VILLAGE_BUILDING;
-            }
+        if (tokenId == FT_TYPE_START) {
+            return TokenType.IN_GAME_CURRENCY;
+        } else if (tokenId == FT_TYPE_START + 1) {
+            return TokenType.EXPERIENCE_BOOST;
+        } else if (
+            tokenId >= NFT_TYPE_START && tokenId < NFT_TYPE_START + 10000
+        ) {
+            return TokenType.PLAYER_CARD;
+        } else if (
+            tokenId >= NFT_TYPE_START + 10000 && tokenId <= NFT_TYPE_END
+        ) {
+            return TokenType.STADIUM_VILLAGE_BUILDING;
         }
-        revert("Invalid token ID");
+        revert InvalidTokenId(tokenId);
     }
 
     // ------------------
