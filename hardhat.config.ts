@@ -34,6 +34,11 @@ const config: HardhatUserConfig = {
             url: SEPOLIA_RPC_URL,
             accounts: [PRIVATE_KEY],
             chainId: 11155111
+        },
+        fuji: {
+            url: AVALANCHE_FUJI_RPC_URL,
+            accounts: [PRIVATE_KEY],
+            chainId: 43113
         }
     }
 };
