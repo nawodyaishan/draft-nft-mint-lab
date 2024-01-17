@@ -16,19 +16,26 @@ ERC1155Burnable,
 ERC1155Supply
 {
     // Constants for token IDs
-    uint256 public constant PLAYER_CARD = 1; // NFT
-    uint256 public constant STADIUM_VILLAGE_BUILDING = 2; // NFT
-    uint256 public constant IN_GAME_CURRENCY = 3; // FT
-    uint256 public constant EXPERIENCE_BOOST = 4; // FT
+    uint256 public constant IN_GAME_CURRENCY = 1; // FT
+    uint256 public constant EXPERIENCE_BOOST = 2; // FT
+    uint256 public constant PLAYER_CARD = 3; // NFT
+    uint256 public constant STADIUM_VILLAGE_BUILDING = 4; // NFT
 
     // Metadata URI
     string private s_baseMetadataURI;
 
+    mapping(uint256 => uint256) private m_lastIssuedId;
+
+    error OutOfNFTSupply(uint256 requestedNFTType, uint256 maxSupply);
+
     constructor(
-        address initialOwner,
         string memory baseMetadataURI
-    ) ERC1155(baseMetadataURI) Ownable(initialOwner) {
+    ) ERC1155(baseMetadataURI) Ownable(msg.sender) {
         s_baseMetadataURI = baseMetadataURI;
+
+        // Initialize the last issued ID for each NFT type
+        m_lastIssuedId[PLAYER_CARD] = 0;
+        m_lastIssuedId[STADIUM_VILLAGE_BUILDING] = 0;
     }
 
     function setURI(string memory newUri) public onlyOwner {
@@ -77,17 +84,23 @@ ERC1155Supply
         _unpause();
     }
 
-    // Minting function for NFTs
+    // Minting function for a single NFT
     function mintNFT(
         address account,
-        uint256 id,
+        uint256 nftType,
         bytes memory data
-    ) public payable onlyOwner {
+    ) public onlyOwner {
         require(
-            id == PLAYER_CARD || id == STADIUM_VILLAGE_BUILDING,
-            "Invalid NFT ID"
+            nftType == PLAYER_CARD || nftType == STADIUM_VILLAGE_BUILDING,
+            "Invalid NFT Type"
         );
-        _mint(account, id, 1, data); // NFTs should generally have a quantity of 1
+
+        if (m_lastIssuedId[nftType] >= 5) {
+            revert OutOfNFTSupply(nftType, 5);
+        }
+
+        uint256 newId = ++m_lastIssuedId[nftType]; // Increment and get the new ID
+        _mint(account, newId, 1, data); // Mint the NFT with the new ID
     }
 
     // Minting batch function for NFTs
@@ -106,20 +119,6 @@ ERC1155Supply
             amounts[i] = 1; // Set the amount for each NFT to 1
         }
         _mintBatch(account, ids, amounts, data);
-    }
-
-    // Minting function for FTs
-    function mintFT(
-        address account,
-        uint256 id,
-        uint256 amount,
-        bytes memory data
-    ) public onlyOwner {
-        require(
-            id == IN_GAME_CURRENCY || id == EXPERIENCE_BOOST,
-            "Invalid FT ID"
-        );
-        _mint(account, id, amount, data); // FTs can have varying quantities
     }
 
     function _update(
