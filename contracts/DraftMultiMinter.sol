@@ -26,9 +26,6 @@ ERC1155Supply
     uint256 public constant PLAYER_CARD = 3; // Non-fungible token
     uint256 public constant STADIUM_VILLAGE_BUILDING = 4; // Non-fungible token
 
-    // Base URI for metadata
-    string private s_baseMetadataURI;
-
     // Mapping to track the last issued ID for each NFT type
     mapping(uint256 => uint256) private m_lastIssuedId;
 
@@ -47,16 +44,23 @@ ERC1155Supply
         uint256 indexed nftType,
         uint256 newId
     );
+    event FTMinted(
+        address indexed account,
+        uint256 indexed nftType,
+        uint256 newId
+    );
     event NFTBatchMinted(address indexed account, uint256[] ids);
 
-    /**
+    /*
      * @dev Sets the base URI for token metadata and initializes state.
      * @param baseMetadataURI Initial base URI for token metadata.
      */
-    constructor(
-        string memory baseMetadataURI
-    ) ERC1155(baseMetadataURI) Ownable(msg.sender) {
-        s_baseMetadataURI = baseMetadataURI;
+    constructor()
+    ERC1155(
+    "https://turquoise-rear-loon-357.mypinata.cloud/ipfs/QmTrUpcUZQ1iCtMo6Jv9CsAhkQaM9Wo5rYmjC4h2XdAGFh/{id}.json"
+    )
+    Ownable(msg.sender)
+    {
         m_lastIssuedId[PLAYER_CARD] = 0;
         m_lastIssuedId[STADIUM_VILLAGE_BUILDING] = 0;
     }
@@ -66,7 +70,6 @@ ERC1155Supply
      * @param newUri New base URI to set.
      */
     function setURI(string memory newUri) public onlyOwner {
-        s_baseMetadataURI = newUri;
         _setURI(newUri);
         emit URIUpdated(newUri);
     }
@@ -76,24 +79,30 @@ ERC1155Supply
      * @param tokenId The ID of the token to return the URI for.
      * @return string URI of the given token ID.
      */
-    function uri(uint256 tokenId) public view override returns (string memory) {
-        if (tokenId == PLAYER_CARD) {
+    function uri(uint256 tokenId) public pure override returns (string memory) {
+        // Check if the tokenId is for a player card
+        if (tokenId >= PLAYER_CARD && tokenId < PLAYER_CARD + 5) {
             return
                 string(
                 abi.encodePacked(
-                    s_baseMetadataURI,
-                    "p-",
-                    Strings.toString(tokenId),
+                    "https://turquoise-rear-loon-357.mypinata.cloud/ipfs/QmTrUpcUZQ1iCtMo6Jv9CsAhkQaM9Wo5rYmjC4h2XdAGFh/p-",
+                    Strings.toString(tokenId - PLAYER_CARD + 1),
                     ".json"
                 )
             );
-        } else if (tokenId == STADIUM_VILLAGE_BUILDING) {
+        }
+            // Check if the tokenId is for a stadium village building
+        else if (
+            tokenId >= STADIUM_VILLAGE_BUILDING &&
+            tokenId < STADIUM_VILLAGE_BUILDING + 5
+        ) {
             return
                 string(
                 abi.encodePacked(
-                    s_baseMetadataURI,
-                    "sb-",
-                    Strings.toString(tokenId),
+                    "https://turquoise-rear-loon-357.mypinata.cloud/ipfs/QmTrUpcUZQ1iCtMo6Jv9CsAhkQaM9Wo5rYmjC4h2XdAGFh/sb-",
+                    Strings.toString(
+                        tokenId - STADIUM_VILLAGE_BUILDING + 1
+                    ),
                     ".json"
                 )
             );
@@ -101,7 +110,7 @@ ERC1155Supply
             return
                 string(
                 abi.encodePacked(
-                    s_baseMetadataURI,
+                    "https://turquoise-rear-loon-357.mypinata.cloud/ipfs/QmTrUpcUZQ1iCtMo6Jv9CsAhkQaM9Wo5rYmjC4h2XdAGFh/",
                     Strings.toString(tokenId),
                     ".json"
                 )
@@ -147,7 +156,7 @@ ERC1155Supply
         _mint(account, ftType, amount, data);
 
         // Emit an event for minting FTs (optional, can be customized or removed)
-        // emit FTMinted(account, ftType, amount);
+        emit FTMinted(account, ftType, amount);
     }
 
     /**
@@ -161,16 +170,18 @@ ERC1155Supply
         uint256 nftType,
         bytes memory data
     ) public onlyOwner {
-        if (nftType != PLAYER_CARD && nftType != STADIUM_VILLAGE_BUILDING) {
-            revert InvalidNFTType(nftType);
-        }
+        require(
+            nftType == PLAYER_CARD || nftType == STADIUM_VILLAGE_BUILDING,
+            "Invalid NFT Type"
+        );
 
         if (m_lastIssuedId[nftType] >= 5) {
             revert MaxNFTSupplyExceeded(nftType, 5);
         }
 
-        uint256 newId = ++m_lastIssuedId[nftType];
-        _mint(account, newId, 1, data);
+        uint256 newId = m_lastIssuedId[nftType] + 1;
+        m_lastIssuedId[nftType] = newId;
+        _mint(account, nftType + newId - 1, 1, data);
         emit NFTMinted(account, nftType, newId);
     }
 
@@ -210,6 +221,10 @@ ERC1155Supply
         for (uint i = 0; i < recipients.length; i++) {
             _safeTransferFrom(msg.sender, recipients[i], tokenId, amount, "");
         }
+    }
+
+    function contractURI() public pure returns (string memory collectionURI) {
+        collectionURI = "https://turquoise-rear-loon-357.mypinata.cloud/ipfs/QmTrUpcUZQ1iCtMo6Jv9CsAhkQaM9Wo5rYmjC4h2XdAGFh/collection.json";
     }
 
     // ------------------
