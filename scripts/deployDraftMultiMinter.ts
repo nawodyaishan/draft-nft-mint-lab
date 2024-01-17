@@ -15,7 +15,7 @@ async function main() {
     const baseMetaDataUri: string = process.env.BASE_METADATA_URI!
 
     const draftMultiMinterFactory = await ethers.getContractFactory("DraftMultiMinter");
-    const DraftMultiMinter = await draftMultiMinterFactory.deploy(baseMetaDataUri)
+    const DraftMultiMinter = await draftMultiMinterFactory.deploy()
     await DraftMultiMinter.waitForDeployment();
 
     console.log(

@@ -20,54 +20,69 @@ ERC1155Pausable,
 ERC1155Burnable,
 ERC1155Supply
 {
-    // Token ID constants
-    uint256 public constant IN_GAME_CURRENCY = 1; // Fungible token
-    uint256 public constant EXPERIENCE_BOOST = 2; // Fungible token
-    uint256 public constant PLAYER_CARD = 3; // Non-fungible token
-    uint256 public constant STADIUM_VILLAGE_BUILDING = 4; // Non-fungible token
+    // ------------------
+    // Constants and State Variables
+    // ------------------
 
-    // Mapping to track the last issued ID for each NFT type
-    mapping(uint256 => uint256) private m_lastIssuedId;
+    uint256 private constant FT_TYPE_START = 1;
+    uint256 private constant FT_TYPE_END = 100;
+    uint256 private constant NFT_TYPE_START = 1001;
+    uint256 private constant NFT_TYPE_END = 20000;
+    string private baseMetadataURI;
 
-    // Custom errors
-    error OutOfNFTSupply(uint256 requestedNFTType, uint256 maxSupply);
-    error InvalidNFTType(uint256 invalidType);
-    error InvalidNFTID(uint256 invalidID);
-    error MaxNFTSupplyExceeded(uint256 nftType, uint256 maxSupply);
-    error URIUpdateError();
-    error MintingError(string reason);
-
-    // Events
-    event URIUpdated(string newUri);
-    event NFTMinted(
-        address indexed account,
-        uint256 indexed nftType,
-        uint256 newId
-    );
-    event FTMinted(
-        address indexed account,
-        uint256 indexed nftType,
-        uint256 newId
-    );
-    event NFTBatchMinted(address indexed account, uint256[] ids);
-
-    /*
-     * @dev Sets the base URI for token metadata and initializes state.
-     * @param baseMetadataURI Initial base URI for token metadata.
-     */
-    constructor()
-    ERC1155(
-    "https://turquoise-rear-loon-357.mypinata.cloud/ipfs/QmTrUpcUZQ1iCtMo6Jv9CsAhkQaM9Wo5rYmjC4h2XdAGFh/{id}.json"
-    )
-    Ownable(msg.sender)
-    {
-        m_lastIssuedId[PLAYER_CARD] = 0;
-        m_lastIssuedId[STADIUM_VILLAGE_BUILDING] = 0;
+    enum TokenType {
+        IN_GAME_CURRENCY,
+        EXPERIENCE_BOOST,
+        PLAYER_CARD,
+        STADIUM_VILLAGE_BUILDING
     }
 
+    mapping(TokenType => uint256) private tokenTypeToId;
+    mapping(TokenType => uint256) private nftSupply;
+
+    // ------------------
+    // Custom Errors
+    // ------------------
+
+    error InvalidTokenId(uint256 InvalidId);
+    error InvalidFTType();
+    error InvalidNFTType();
+    error MaxNFTSupplyReached();
+    error URIUpdateError();
+    error MintingError();
+
+    // ------------------
+    // Events
+    // ------------------
+
+    event URIUpdated(string NewUri);
+    event NFTMinted(address Account, uint256 NftType, uint256 NewId);
+    event FTMinted(address Account, uint256 FtType, uint256 Amount);
+    event NFTBatchMinted(address Account, uint256[] Ids);
+
+    // ------------------
+    // Constructor
+    // ------------------
+
+    constructor(
+        string memory _baseMetadataURI
+    ) ERC1155(_baseMetadataURI) Ownable(msg.sender) {
+        baseMetadataURI = _baseMetadataURI;
+        tokenTypeToId[TokenType.IN_GAME_CURRENCY] = FT_TYPE_START;
+        tokenTypeToId[TokenType.EXPERIENCE_BOOST] = FT_TYPE_START + 1;
+        tokenTypeToId[TokenType.PLAYER_CARD] = NFT_TYPE_START;
+        tokenTypeToId[TokenType.STADIUM_VILLAGE_BUILDING] =
+            NFT_TYPE_START +
+            10000;
+    }
+
+    // ------------------
+    // URI Management
+    // ------------------
+
     /**
-     * @dev Updates the base URI for token metadata.
-     * @param newUri New base URI to set.
+     * @dev Sets a new base URI for the token metadata.
+     * @param newUri The new base URI to be set.
      */
     function setURI(string memory newUri) public onlyOwner {
         _setURI(newUri);
@@ -75,47 +90,80 @@ ERC1155Supply
     }
 
     /**
-     * @dev Returns the URI for a given token ID.
-     * @param tokenId The ID of the token to return the URI for.
-     * @return string URI of the given token ID.
+     * @dev Returns the metadata URI for a given token ID.
+     * @param tokenId The ID of the token.
+     * @return string The metadata URI of the specified token ID.
      */
-    function uri(uint256 tokenId) public pure override returns (string memory) {
-        // Check if the tokenId is for a player card
-        if (tokenId >= PLAYER_CARD && tokenId < PLAYER_CARD + 5) {
+    function uri(uint256 tokenId) public view override returns (string memory) {
+        if (tokenId >= FT_TYPE_START && tokenId <= FT_TYPE_END) {
             return
                 string(
                 abi.encodePacked(
-                    "https://turquoise-rear-loon-357.mypinata.cloud/ipfs/QmTrUpcUZQ1iCtMo6Jv9CsAhkQaM9Wo5rYmjC4h2XdAGFh/p-",
-                    Strings.toString(tokenId - PLAYER_CARD + 1),
+                    baseMetadataURI,
+                    Strings.toString(tokenId),
                     ".json"
                 )
             );
-        }
-            // Check if the tokenId is for a stadium village building
-        else if (
-            tokenId >= STADIUM_VILLAGE_BUILDING &&
-            tokenId < STADIUM_VILLAGE_BUILDING + 5
-        ) {
+        } else if (tokenId >= NFT_TYPE_START && tokenId <= NFT_TYPE_END) {
             return
                 string(
                 abi.encodePacked(
-                    "https://turquoise-rear-loon-357.mypinata.cloud/ipfs/QmTrUpcUZQ1iCtMo6Jv9CsAhkQaM9Wo5rYmjC4h2XdAGFh/sb-",
-                    Strings.toString(
-                        tokenId - STADIUM_VILLAGE_BUILDING + 1
-                    ),
-                    ".json"
-                )
-            );
-        } else {
-            return
-                string(
-                abi.encodePacked(
-                    "https://turquoise-rear-loon-357.mypinata.cloud/ipfs/QmTrUpcUZQ1iCtMo6Jv9CsAhkQaM9Wo5rYmjC4h2XdAGFh/",
+                    baseMetadataURI,
                     Strings.toString(tokenId),
                     ".json"
                 )
             );
         }
+        revert InvalidTokenId(tokenId);
+    }
+
+    // ------------------
+    // Token Minting
+    // ------------------
+
+    /**
+     * @dev Mints fungible tokens.
+     * @param account The address that will receive the minted tokens.
+     * @param ftType The type of the fungible token to be minted.
+     * @param amount The amount of tokens to be minted.
+     * @param data Additional data that will be passed to the minting function.
+     */
+    function mintFT(
+        address account,
+        uint256 ftType,
+        uint256 amount,
+        bytes memory data
+    ) public onlyOwner {
+        if (!(ftType >= FT_TYPE_START && ftType <= FT_TYPE_END)) {
+            revert InvalidFTType();
+        }
+        _mint(account, ftType, amount, data);
+        emit FTMinted(account, ftType, amount);
+    }
+
+    /**
+     * @dev Mints a non-fungible token.
+     * @param account The address that will receive the minted NFT.
+     * @param nftType The type of the NFT to be minted.
+     * @param data Additional data that will be passed to the minting function.
+     */
+    function mintNFT(
+        address account,
+        uint256 nftType,
+        bytes memory data
+    ) public onlyOwner {
+        if (!(nftType >= NFT_TYPE_START && nftType <= NFT_TYPE_END)) {
+            revert InvalidNFTType();
+        }
+        TokenType tokenType = getTokenTypeFromId(nftType);
+        uint256 currentSupply = nftSupply[tokenType];
+        if (currentSupply >= 5) {
+            revert MaxNFTSupplyReached();
+        }
+        nftSupply[tokenType] = currentSupply + 1;
+        uint256 tokenId = nftType + currentSupply;
+        _mint(account, tokenId, 1, data);
+        emit NFTMinted(account, nftType, tokenId);
     }
 
     /**
@@ -133,102 +181,52 @@ ERC1155Supply
     }
 
     /**
-     * @dev Mints fungible tokens (FTs).
-     * @notice This function allows minting of specified fungible token types.
-     * @param account The address to receive the minted tokens.
-     * @param ftType The type of the fungible token to mint.
-     * @param amount The amount of the fungible tokens to mint.
-     * @param data Additional data with no specified format, sent in call to `_mint`.
+     * @dev Determines the token type based on a given token ID.
+     * @param tokenId The ID of the token.
+     * @return TokenType The type of the token.
      */
-    function mintFT(
-        address account,
-        uint256 ftType,
-        uint256 amount,
-        bytes memory data
-    ) public onlyOwner {
-        // Check if the token type is valid for FTs
-        require(
-            ftType == IN_GAME_CURRENCY || ftType == EXPERIENCE_BOOST,
-            "Invalid FT Type"
-        );
-
-        // Perform the minting of fungible tokens
-        _mint(account, ftType, amount, data);
-
-        // Emit an event for minting FTs (optional, can be customized or removed)
-        emit FTMinted(account, ftType, amount);
-    }
-
-    /**
-     * @dev Mints a single new NFT.
-     * @param account Address of the NFT recipient.
-     * @param nftType Type of the NFT to mint.
-     * @param data Additional data with no specified format, sent in call to `_mint`.
-     */
-    function mintNFT(
-        address account,
-        uint256 nftType,
-        bytes memory data
-    ) public onlyOwner {
-        require(
-            nftType == PLAYER_CARD || nftType == STADIUM_VILLAGE_BUILDING,
-            "Invalid NFT Type"
-        );
-
-        if (m_lastIssuedId[nftType] >= 5) {
-            revert MaxNFTSupplyExceeded(nftType, 5);
-        }
-
-        uint256 newId = m_lastIssuedId[nftType] + 1;
-        m_lastIssuedId[nftType] = newId;
-        _mint(account, nftType + newId - 1, 1, data);
-        emit NFTMinted(account, nftType, newId);
-    }
-
-    /**
-     * @dev Mints a batch of new NFTs.
-     * @param account Address of the NFT recipient.
-     * @param ids Array of NFT types to mint.
-     * @param data Additional data with no specified format, sent in call to `_mintBatch`.
-     */
-    function mintNFTBatch(
-        address account,
-        uint256[] memory ids,
-        bytes memory data
-    ) public onlyOwner {
-        uint256[] memory amounts = new uint256[](ids.length);
-
-        for (uint256 i = 0; i < ids.length; i++) {
-            if (ids[i] != PLAYER_CARD && ids[i] != STADIUM_VILLAGE_BUILDING) {
-                revert InvalidNFTID(ids[i]);
+    function getTokenTypeFromId(
+        uint256 tokenId
+    ) public view returns (TokenType) {
+        if (tokenId >= FT_TYPE_START && tokenId <= FT_TYPE_END) {
+            // Iterate through FT types
+            if (tokenId == tokenTypeToId[TokenType.IN_GAME_CURRENCY]) {
+                return TokenType.IN_GAME_CURRENCY;
+            } else if (tokenId == tokenTypeToId[TokenType.EXPERIENCE_BOOST]) {
+                return TokenType.EXPERIENCE_BOOST;
             }
-            amounts[i] = 1;
+        } else if (tokenId >= NFT_TYPE_START && tokenId <= NFT_TYPE_END) {
+            // For NFTs, determine type based on the defined range
+            if (
+                tokenId >= tokenTypeToId[TokenType.PLAYER_CARD] &&
+                tokenId < tokenTypeToId[TokenType.PLAYER_CARD] + 10000
+            ) {
+                return TokenType.PLAYER_CARD;
+            } else if (
+                tokenId >= tokenTypeToId[TokenType.STADIUM_VILLAGE_BUILDING] &&
+                tokenId <
+                tokenTypeToId[TokenType.STADIUM_VILLAGE_BUILDING] + 10000
+            ) {
+                return TokenType.STADIUM_VILLAGE_BUILDING;
+            }
         }
-        _mintBatch(account, ids, amounts, data);
-        emit NFTBatchMinted(account, ids);
+        revert("Invalid token ID");
     }
 
-    function airDropFT(
-        uint256 tokenId,
-        address[] calldata recipients,
-        uint256 amount
-    ) external onlyOwner {
-        // Check if the token type is valid for FTs
-        require(
-            tokenId == IN_GAME_CURRENCY || tokenId == EXPERIENCE_BOOST,
-            "Invalid FT Type"
-        );
-        for (uint i = 0; i < recipients.length; i++) {
-            _safeTransferFrom(msg.sender, recipients[i], tokenId, amount, "");
-        }
-    }
+    // ------------------
+    // Utility Functions
+    // ------------------
 
+    /**
+     * @dev Returns the URI of the contract's metadata.
+     * @return string The URI of the contract's collection metadata.
+     */
     function contractURI() public pure returns (string memory collectionURI) {
         collectionURI = "https://turquoise-rear-loon-357.mypinata.cloud/ipfs/QmTrUpcUZQ1iCtMo6Jv9CsAhkQaM9Wo5rYmjC4h2XdAGFh/collection.json";
     }
 
     // ------------------
-    // Explicit overrides
+    // overrides
     // ------------------
 
     /**
