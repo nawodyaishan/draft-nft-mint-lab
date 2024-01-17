@@ -14,11 +14,11 @@ import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Supply.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 
 contract DraftMultiMinter is
-ERC1155,
-Ownable,
-ERC1155Pausable,
-ERC1155Burnable,
-ERC1155Supply
+    ERC1155,
+    Ownable,
+    ERC1155Pausable,
+    ERC1155Burnable,
+    ERC1155Supply
 {
     // ------------------
     // Constants and State Variables
@@ -26,6 +26,8 @@ ERC1155Supply
 
     uint256 private constant FT_TYPE_START = 1;
     uint256 private constant FT_TYPE_END = 100;
+    uint256 private constant NFT_TYPE_START = 1000;
+    uint256 private constant NFT_TYPE_END = 20000;
     uint256 private constant PLAYER_CARD_START = 1000; // Starting from 1000 for PLAYER_CARD
     uint256 private constant STADIUM_VILLAGE_START = 10000; // Starting from 10000 for STADIUM_VILLAGE_BUILDING
     uint256 private constant MAX_NFT_SUPPLY = 5; // Maximum supply for each NFT type
@@ -67,12 +69,12 @@ ERC1155Supply
     // ------------------
 
     constructor()
-    ERC1155(
-    "https://turquoise-rear-loon-357.mypinata.cloud/ipfs/QmWz9pE8uKrX2dasG9pCmgxR9g7SSHpoDYan7KLz8332Sn/{id}.json"
-    )
-    Ownable(msg.sender)
+        ERC1155(
+            "https://turquoise-rear-loon-357.mypinata.cloud/ipfs/QmahUaDqT8b4dMcibzZJzVy2edV2rTU6sKDUqcNavJEMJ7/{id}.json"
+        )
+        Ownable(msg.sender)
     {
-        baseMetadataURI = "https://turquoise-rear-loon-357.mypinata.cloud/ipfs/QmWz9pE8uKrX2dasG9pCmgxR9g7SSHpoDYan7KLz8332Sn/{id}.json";
+        baseMetadataURI = "https://turquoise-rear-loon-357.mypinata.cloud/ipfs/QmahUaDqT8b4dMcibzZJzVy2edV2rTU6sKDUqcNavJEMJ7/{id}.json";
         tokenTypeToId[TokenType.IN_GAME_CURRENCY] = FT_TYPE_START;
         tokenTypeToId[TokenType.EXPERIENCE_BOOST] = FT_TYPE_START + 1;
         tokenTypeToId[TokenType.PLAYER_CARD] = NFT_TYPE_START;
@@ -103,12 +105,12 @@ ERC1155Supply
         if (tokenId >= FT_TYPE_START && tokenId <= FT_TYPE_END) {
             return
                 string(
-                abi.encodePacked(
-                    baseMetadataURI,
-                    Strings.toString(tokenId),
-                    ".json"
-                )
-            );
+                    abi.encodePacked(
+                        baseMetadataURI,
+                        Strings.toString(tokenId),
+                        ".json"
+                    )
+                );
         } else if (
             (tokenId >= PLAYER_CARD_START &&
                 tokenId < PLAYER_CARD_START + MAX_NFT_SUPPLY) ||
@@ -117,12 +119,12 @@ ERC1155Supply
         ) {
             return
                 string(
-                abi.encodePacked(
-                    baseMetadataURI,
-                    Strings.toString(tokenId),
-                    ".json"
-                )
-            );
+                    abi.encodePacked(
+                        baseMetadataURI,
+                        Strings.toString(tokenId),
+                        ".json"
+                    )
+                );
         }
         revert InvalidTokenId(tokenId);
     }
@@ -164,7 +166,7 @@ ERC1155Supply
         TokenType typeEnum = getTokenTypeFromId(tokenType);
         require(
             typeEnum == TokenType.PLAYER_CARD ||
-            typeEnum == TokenType.STADIUM_VILLAGE_BUILDING,
+                typeEnum == TokenType.STADIUM_VILLAGE_BUILDING,
             "Invalid NFT Type"
         );
 
@@ -202,7 +204,7 @@ ERC1155Supply
      */
     function getTokenTypeFromId(
         uint256 tokenId
-    ) public view returns (TokenType) {
+    ) public pure returns (TokenType) {
         if (tokenId == FT_TYPE_START) {
             return TokenType.IN_GAME_CURRENCY;
         } else if (tokenId == FT_TYPE_START + 1) {
@@ -228,7 +230,7 @@ ERC1155Supply
      * @return string The URI of the contract's collection metadata.
      */
     function contractURI() public pure returns (string memory collectionURI) {
-        collectionURI = "https://turquoise-rear-loon-357.mypinata.cloud/ipfs/QmWz9pE8uKrX2dasG9pCmgxR9g7SSHpoDYan7KLz8332Sn/collection.json";
+        collectionURI = "https://turquoise-rear-loon-357.mypinata.cloud/ipfs/QmahUaDqT8b4dMcibzZJzVy2edV2rTU6sKDUqcNavJEMJ7/collection.json";
     }
 
     // ------------------
@@ -274,7 +276,7 @@ ERC1155Supply
     ) public view returns (uint256) {
         require(
             tokenType == TokenType.PLAYER_CARD ||
-            tokenType == TokenType.STADIUM_VILLAGE_BUILDING,
+                tokenType == TokenType.STADIUM_VILLAGE_BUILDING,
             "Invalid NFT Type"
         );
         return nftSupply[tokenType];

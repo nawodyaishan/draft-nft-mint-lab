@@ -8,11 +8,11 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Pausable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract DraftMinter is
-ERC721,
-ERC721Enumerable,
-ERC721URIStorage,
-ERC721Pausable,
-Ownable
+    ERC721,
+    ERC721Enumerable,
+    ERC721URIStorage,
+    ERC721Pausable,
+    Ownable
 {
     uint256 private _nextTokenId;
 
@@ -44,9 +44,9 @@ Ownable
         uint256 tokenId,
         address auth
     )
-    internal
-    override(ERC721, ERC721Enumerable, ERC721Pausable)
-    returns (address)
+        internal
+        override(ERC721, ERC721Enumerable, ERC721Pausable)
+        returns (address)
     {
         return super._update(to, tokenId, auth);
     }
@@ -67,10 +67,10 @@ Ownable
     function supportsInterface(
         bytes4 interfaceId
     )
-    public
-    view
-    override(ERC721, ERC721Enumerable, ERC721URIStorage)
-    returns (bool)
+        public
+        view
+        override(ERC721, ERC721Enumerable, ERC721URIStorage)
+        returns (bool)
     {
         return super.supportsInterface(interfaceId);
     }
