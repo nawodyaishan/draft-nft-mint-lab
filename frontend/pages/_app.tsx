@@ -1,24 +1,23 @@
 import type {AppProps} from "next/app";
-import {coinbaseWallet, ThirdwebProvider, walletConnect} from "@thirdweb-dev/react";
+import {coinbaseWallet, metamaskWallet, ThirdwebProvider, walletConnect} from "@thirdweb-dev/react";
 import "../styles/globals.css";
-import {Sepolia} from "@thirdweb-dev/chains";
+import {Mumbai} from "@thirdweb-dev/chains";
+import {Navbar} from "../components/NavBar";
 
-// This is the chain your dApp will work on.
-// Change this to the chain your app is built for.
-// You can also import additional chains from `@thirdweb-dev/chains` and pass them directly.
-const activeChain = Sepolia;
+const activeChain = Mumbai;
 
 function MyApp({Component, pageProps}: AppProps) {
-    function metamaskWallet(): import("@thirdweb-dev/react").WalletConfig<any> {
-        throw new Error("Function not implemented.");
-    }
-
     return (
         <ThirdwebProvider
             clientId={process.env.NEXT_PUBLIC_TEMPLATE_CLIENT_ID}
             activeChain={activeChain}
-            supportedWallets={[metamaskWallet(), coinbaseWallet(), walletConnect()]}
+            supportedWallets={[
+                metamaskWallet({recommended: true}),
+                coinbaseWallet(),
+                walletConnect(),
+            ]}
         >
+            <Navbar/>
             <Component {...pageProps} />
         </ThirdwebProvider>
     );

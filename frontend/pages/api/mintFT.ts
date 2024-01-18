@@ -38,7 +38,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
                 clientId: process.env.NEXT_PUBLIC_TEMPLATE_CLIENT_ID,
             });
             const contract = await sdk.getContract("0x33C6a1bA07046f8731D50a22C2dF92114570Cc39");
-            const response = await contract.call("mintNFT", [address, 3, "0x"])
+            const response = await contract.call("mintFT", [address, 1, 100, "0x"])
 
             console.log("NFT minted: ", response);
             res.status(200).json({message: "NFT minted successfully", response});
