@@ -1,69 +1,47 @@
 import React, {useState} from 'react';
-import {useAddress} from "@thirdweb-dev/react";
+import {useAddress, useContract, useContractWrite} from "@thirdweb-dev/react";
 import styles from "../styles/Home.module.css";
 import {NextPage} from "next";
-import {FTPayload, NFTPayload, TokenTypes} from "../interfaces/token-data-types";
+import {TokenTypes} from "../interfaces/token-data-types";
 
 const Home: NextPage = () => {
     const address = useAddress();
     const [tokenType, setTokenType] = useState<TokenTypes | undefined>();
     const [ftAmount, setFtAmount] = useState<number>(0);
     const [minting, setMinting] = useState<boolean>(false);
+    const {contract} = useContract("0x33C6a1bA07046f8731D50a22C2dF92114570Cc39");
+    const {mutateAsync: mintFT} = useContractWrite(contract, "mintFT");
+    const {mutateAsync: mintNFT} = useContractWrite(contract, "mintNFT");
 
-    const handleMint = async () => {
-        if (tokenType === undefined || address === undefined) {
-            alert("Minting error! Undefined Values");
-            return
-        }
+    const handleMintFT = async () => {
+        if (typeof tokenType === "undefined" || !address) return;
         setMinting(true);
         try {
-            if (tokenType === TokenTypes.EXPERIENCE_BOOST || tokenType === TokenTypes.IN_GAME_CURRENCY) {
-                const ftPayload: FTPayload = {
-                    address: address,
-                    amount: ftAmount,
-                    tokenId: tokenType
-                }
-                console.log("🚀 - payload data", ftPayload)
+            const data = await mintFT({args: [address, tokenType, ftAmount, "0x"]});
+            console.info("FT minted successfully", data);
+        } catch (err) {
+            console.error("FT minting error", err);
+        }
+        setMinting(false);
+    };
 
-                const response = await fetch("/api/mint", {
-                    method: "POST",
-                    body: JSON.stringify(ftPayload),
-                });
+    const handleMintNFT = async () => {
+        if (typeof tokenType === "undefined" || !address) return;
+        setMinting(true);
+        try {
+            const data = await mintNFT({args: [address, tokenType, "0x"]});
+            console.info("NFT minted successfully", data);
+        } catch (err) {
+            console.error("NFT minting error", err);
+        }
+        setMinting(false);
+    };
 
-                const data = await response.json();
-
-                if (!response.ok) {
-                    throw new Error(data.message || "Something went wrong");
-                }
-                console.log("Token minted:", data);
-                alert("Token minted!");
-
-            } else {
-                const nftPayload: NFTPayload = {
-                    address: address,
-                    tokenId: tokenType
-                }
-                console.log("🚀 - payload data", nftPayload)
-
-                const response = await fetch("/api/mint", {
-                    method: "POST",
-                    body: JSON.stringify(nftPayload),
-                });
-
-                const data = await response.json();
-
-                if (!response.ok) {
-                    throw new Error(data.message || "Something went wrong");
-                }
-                console.log("Token minted:", data);
-                alert("Token minted!");
-            }
-        } catch (error) {
-            console.error("Minting error:", error);
-            alert("Minting error!");
-        } finally {
-            setMinting(false);
-            setFtAmount(0);
+    const handleMint = () => {
+        if (isNFT()) {
+            handleMintNFT();
+        } else {
+            handleMintFT();
         }
     };
 
