@@ -14,11 +14,11 @@ import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Supply.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 
 contract DraftMultiMinter is
-    ERC1155,
-    Ownable,
-    ERC1155Pausable,
-    ERC1155Burnable,
-    ERC1155Supply
+ERC1155,
+Ownable,
+ERC1155Pausable,
+ERC1155Burnable,
+ERC1155Supply
 {
     // ------------------
     // Constants and State Variables
@@ -67,10 +67,10 @@ contract DraftMultiMinter is
     // ------------------
 
     constructor()
-        ERC1155(
-            "https://turquoise-rear-loon-357.mypinata.cloud/ipfs/QmahUaDqT8b4dMcibzZJzVy2edV2rTU6sKDUqcNavJEMJ7/{id}.json"
-        )
-        Ownable(msg.sender)
+    ERC1155(
+    "https://turquoise-rear-loon-357.mypinata.cloud/ipfs/QmahUaDqT8b4dMcibzZJzVy2edV2rTU6sKDUqcNavJEMJ7/{id}.json"
+    )
+    Ownable(msg.sender)
     {
         baseMetadataURI = "https://turquoise-rear-loon-357.mypinata.cloud/ipfs/QmahUaDqT8b4dMcibzZJzVy2edV2rTU6sKDUqcNavJEMJ7/";
         tokenTypeToId[TokenType.IN_GAME_CURRENCY] = FT_TYPE_START;
@@ -103,12 +103,12 @@ contract DraftMultiMinter is
         if (tokenId >= FT_TYPE_START && tokenId <= FT_TYPE_END) {
             return
                 string(
-                    abi.encodePacked(
-                        baseMetadataURI,
-                        Strings.toString(tokenId),
-                        ".json"
-                    )
-                );
+                abi.encodePacked(
+                    baseMetadataURI,
+                    Strings.toString(tokenId),
+                    ".json"
+                )
+            );
         } else if (
             (tokenId >= PLAYER_CARD_START &&
                 tokenId < PLAYER_CARD_START + MAX_NFT_SUPPLY) ||
@@ -117,12 +117,12 @@ contract DraftMultiMinter is
         ) {
             return
                 string(
-                    abi.encodePacked(
-                        baseMetadataURI,
-                        Strings.toString(tokenId),
-                        ".json"
-                    )
-                );
+                abi.encodePacked(
+                    baseMetadataURI,
+                    Strings.toString(tokenId),
+                    ".json"
+                )
+            );
         }
         revert InvalidTokenId(tokenId);
     }
@@ -271,7 +271,7 @@ contract DraftMultiMinter is
     ) public view returns (uint256) {
         require(
             tokenType == TokenType.PLAYER_CARD ||
-                tokenType == TokenType.STADIUM_VILLAGE_BUILDING,
+            tokenType == TokenType.STADIUM_VILLAGE_BUILDING,
             "Invalid NFT Type"
         );
         return nftSupply[tokenType];
