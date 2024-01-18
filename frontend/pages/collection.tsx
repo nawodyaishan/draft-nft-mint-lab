@@ -1,30 +1,62 @@
-import { useContract, useNFTs } from "@thirdweb-dev/react";
-import styles from "../styles/Home.module.css";
-import { NFT_COLLECTION_CONTRACT_ADDRESS } from "../constants/constants";
-import { NFTCard } from "../components/NFTCard";
+import React from 'react';
+import {useContract, useNFTs} from '@thirdweb-dev/react';
+import styles from '../styles/Home.module.css';
+import {NFTCard} from '../components/NFTCard';
+import {abi} from '../constants/abi';
+import Spinner from '../components/Spinner'; // Assuming you have a Spinner component
 
 const CollectionPage = () => {
-    const { contract } = useContract(NFT_COLLECTION_CONTRACT_ADDRESS);
+    const contractAddress = '0xAAfb680fce8be4f599D503207b4f765409e83bf0';
 
-    const { data: nfts } = useNFTs(contract);
+    const {
+        contract,
+        isLoading: isLoadingContract,
+        error: errorContract,
+    } = useContract(contractAddress, abi);
+
+    const {
+        data: nfts,
+        isLoading: isLoadingNfts,
+        error: errorNfts,
+    } = useNFTs(contract);
+
+    if (isLoadingContract || isLoadingNfts) {
+        return (
+            <div className={styles.container}>
+                <Spinner/>
+                <p>Loading...</p>
+            </div>
+        );
+    }
+
+    if (errorContract) {
+        return (
+            <div className={styles.container}>
+                <p>Error loading contract: {errorContract.toString() || 'Unknown error'}</p>
+            </div>
+        );
+    }
+
+    if (errorNfts) {
+        return (
+            <div className={styles.container}>
+                <p>Error loading NFTs: {errorNfts.toString() || 'Unknown error'}</p>
+            </div>
+        );
+    }
 
     return (
         <div className={styles.container}>
             <h1>Collection</h1>
-            <div className={styles.grid} style={{ marginBottom: "1rem"}}>
+            <div className={styles.grid} style={{marginBottom: '1rem'}}>
                 {nfts && nfts.length > 0 ? (
-                    nfts.map((nft) => (
-                        <NFTCard
-                            key={nft.metadata.id}
-                            nft={nft}
-                        />
-                    ))
+                    nfts.map((nft) => <NFTCard key={nft.metadata.id} nft={nft}/>)
                 ) : (
-                    <p>No NFTs found</p>
+                    <p>No NFTs found in the collection.</p>
                 )}
             </div>
         </div>
-    )
+    );
 };
 
 export default CollectionPage;

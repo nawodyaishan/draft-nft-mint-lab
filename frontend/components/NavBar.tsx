@@ -1,4 +1,4 @@
-import { ConnectWallet } from "@thirdweb-dev/react";
+import {ConnectWallet} from "@thirdweb-dev/react";
 import styles from "../styles/Home.module.css";
 import Link from "next/link";
 
@@ -6,7 +6,7 @@ export const Navbar = () => {
     return (
         <div className={styles.navbar}>
             <div className={styles.navbarLogo}>
-                <h1>NFT Minter</h1>
+                <h1>DRAFT ERC1155 Minter</h1>
             </div>
             <div className={styles.navbarLinks}>
                 <Link href={"/"}>
