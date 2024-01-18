@@ -1,8 +1,9 @@
 import React, {useState} from 'react';
-import {useAddress, useContract, useContractWrite} from "@thirdweb-dev/react";
+import {useAddress, useContract, useContractEvents, useContractWrite} from "@thirdweb-dev/react";
 import styles from "../styles/Home.module.css";
 import {NextPage} from "next";
 import {TokenTypes} from "../interfaces/token-data-types";
+
 
 const Home: NextPage = () => {
     const address = useAddress();
@@ -12,13 +13,20 @@ const Home: NextPage = () => {
     const {contract} = useContract("0x33C6a1bA07046f8731D50a22C2dF92114570Cc39");
     const {mutateAsync: mintFT} = useContractWrite(contract, "mintFT");
     const {mutateAsync: mintNFT} = useContractWrite(contract, "mintNFT");
-
+    const {data: allEvents} = useContractEvents(contract);
+    const {data: eventNFTMinted} = useContractEvents(contract, "NFTMinted")
+    const {data: eventFTMinted, isLoading} = useContractEvents(contract, "FTMinted")
     const handleMintFT = async () => {
         if (typeof tokenType === "undefined" || !address) return;
         setMinting(true);
         try {
             const data = await mintFT({args: [address, tokenType, ftAmount, "0x"]});
             console.info("FT minted successfully", data);
+            if (eventFTMinted) {
+                eventFTMinted.forEach(event => {
+                    console.log(event, event.data)
+                });
+            }
         } catch (err) {
             console.error("FT minting error", err);
         }
@@ -31,6 +39,11 @@ const Home: NextPage = () => {
         try {
             const data = await mintNFT({args: [address, tokenType, "0x"]});
             console.info("NFT minted successfully", data);
+            if (eventNFTMinted) {
+                eventNFTMinted.forEach(event => {
+                    console.log(event, event.data)
+                });
+            }
         } catch (err) {
             console.error("NFT minting error", err);
         }
@@ -54,7 +67,7 @@ const Home: NextPage = () => {
             {address ? (
                 <div className={styles.minterContainer}>
                     <div className={styles.mintContainerSection}>
-                        <h1>{isNFT() ? "NFT Metadata" : "FT Minting"}</h1>
+                        <h1>{tokenType === undefined ? "Select Token to Mint" : (isNFT() ? "NFT Metadata" : "FT Minting")}</h1>
 
                         <p>Token Type:</p>
                         <select
@@ -99,6 +112,21 @@ const Home: NextPage = () => {
                     <h1>Sign in to mint a token</h1>
                 </div>
             )}
+            <h2>Contract Events</h2>
+            <div className={styles.eventsContainer}>
+                <div className={styles.eventsList}>
+                    {allEvents && allEvents.length > 0 ? (
+                        allEvents.map((event, index) => (
+                            <div key={index} className={styles.eventCard}>
+                                <h3>{event.eventName}</h3>
+                                <p>{JSON.stringify(event.data)}</p>
+                            </div>
+                        ))
+                    ) : (
+                        <p>No events found.</p>
+                    )}
+                </div>
+            </div>
         </div>
     );
 };

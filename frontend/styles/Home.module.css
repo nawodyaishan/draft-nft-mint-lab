@@ -83,7 +83,6 @@
     border-radius: 10px;
     transition: color 0.15s ease, border-color 0.15s ease;
     max-width: 440px;
-    overflow: none;
     border: none;
 }
 
@@ -285,4 +284,109 @@
     padding: 0.5rem;
     font-size: 0.75rem;
     color: #555;
+}
+
+.eventsContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 2rem;
+    padding: 1rem;
+    background-color: #131313;
+    border-radius: 10px;
+    border: 1px solid #333;
+    overflow-y: auto;
+    max-height: 400px;
+    width: 100%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.eventsList {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+}
+
+.eventCard {
+    background-color: #272c34;
+    color: #ffffff;
+    border: 1px solid #555;
+    border-radius: 4px;
+    padding: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease-in-out;
+    word-wrap: break-word;
+    max-width: 100%;
+}
+
+.eventCard h3 {
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: #fff;
+    margin-bottom: 0.5rem;
+}
+
+.eventCard p {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: #ccc;
+}
+
+.eventCard:hover {
+    background-color: #333;
+    border-color: royalblue;
+    transform: scale(1.02);
+}
+
+@media (max-width: 768px) {
+    .eventsContainer {
+        max-width: 100%;
+        padding: 0.5rem;
+    }
+
+    .eventCard {
+        padding: 0.5rem;
+    }
+
+    .eventCard h3 {
+        font-size: 1rem;
+    }
+
+    .eventCard p {
+        font-size: 0.8rem;
+    }
+}
+
+.mintCollectionSection {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.gallery {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    width: 100%;
+    padding: 20px;
+}
+
+.card {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.loading {
+    font-size: 1.25rem;
 }

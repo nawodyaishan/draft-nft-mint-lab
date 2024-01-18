@@ -1,61 +1,29 @@
-import React from 'react';
-import {useContract, useNFTs} from '@thirdweb-dev/react';
-import styles from '../styles/Home.module.css';
-import {NFTCard} from '../components/NFTCard';
-import {abi} from '../constants/abi';
-import Spinner from '../components/Spinner'; // Assuming you have a Spinner component
+import {ThirdwebNftMedia, useContract, useContractMetadata, useNFTs} from "@thirdweb-dev/react";
 
 const CollectionPage = () => {
-    const contractAddress = '0xAAfb680fce8be4f599D503207b4f765409e83bf0';
-
-    const {
-        contract,
-        isLoading: isLoadingContract,
-        error: errorContract,
-    } = useContract(contractAddress, abi);
-
-    const {
-        data: nfts,
-        isLoading: isLoadingNfts,
-        error: errorNfts,
-    } = useNFTs(contract);
-
-    if (isLoadingContract || isLoadingNfts) {
-        return (
-            <div className={styles.container}>
-                <Spinner/>
-                <p>Loading...</p>
-            </div>
-        );
-    }
-
-    if (errorContract) {
-        return (
-            <div className={styles.container}>
-                <p>Error loading contract: {errorContract.toString() || 'Unknown error'}</p>
-            </div>
-        );
-    }
-
-    if (errorNfts) {
-        return (
-            <div className={styles.container}>
-                <p>Error loading NFTs: {errorNfts.toString() || 'Unknown error'}</p>
-            </div>
-        );
-    }
+    const {contract} = useContract("0x33C6a1bA07046f8731D50a22C2dF92114570Cc39");
+    const {data: nfts, isLoading} = useNFTs(contract);
+    const {data: metadata, isLoading: loadingMetadata} = useContractMetadata(contract);
 
     return (
-        <div className={styles.container}>
-            <h1>Collection</h1>
-            <div className={styles.grid} style={{marginBottom: '1rem'}}>
-                {nfts && nfts.length > 0 ? (
-                    nfts.map((nft) => <NFTCard key={nft.metadata.id} nft={nft}/>)
-                ) : (
-                    <p>No NFTs found in the collection.</p>
-                )}
-            </div>
-        </div>
+        <main className="mintCollectionSection">
+            {!loadingMetadata && (
+                <header className="mintCollectionSection">
+                    <h1>{metadata?.name}</h1>
+                </header>
+            )}
+            {!isLoading ? (
+                <div className="gallery">
+                    {nfts?.map(e => (
+                        <div key={e.metadata.id} className="card">
+                            <ThirdwebNftMedia metadata={e.metadata}/>
+                        </div>
+                    ))}
+                </div>
+            ) : (
+                <p className="loading">Loading...</p>
+            )}
+        </main>
     );
 };
 
