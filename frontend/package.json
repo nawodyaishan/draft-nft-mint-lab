@@ -16,11 +16,13 @@
     "@thirdweb-dev/react": "^4",
     "@thirdweb-dev/sdk": "^4",
     "@thirdweb-dev/storage": "^2.0.8",
+    "@types/react-modal": "^3.16.3",
     "ethers": "^5",
     "formidable": "^3.5.1",
     "next": "^13",
     "react": "^18.2",
-    "react-dom": "^18.2"
+    "react-dom": "^18.2",
+    "react-modal": "^3.16.1"
   },
   "devDependencies": {
     "@types/formidable": "^3.4.5",

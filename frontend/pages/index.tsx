@@ -4,7 +4,6 @@ import styles from "../styles/Home.module.css";
 import {NextPage} from "next";
 import {TokenTypes} from "../interfaces/token-data-types";
 
-
 const Home: NextPage = () => {
     const address = useAddress();
     const [tokenType, setTokenType] = useState<TokenTypes | undefined>();
