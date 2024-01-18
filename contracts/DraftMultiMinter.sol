@@ -51,6 +51,7 @@ contract DraftMultiMinter is
     error InvalidFTType(uint256 ftType);
     error InvalidNFTType(uint256 tokenType);
     error MaxNFTSupplyReached(TokenType tokenType);
+    error InsufficientBalance(uint256 requested, uint256 available);
 
     // ------------------
     // Events
@@ -60,6 +61,7 @@ contract DraftMultiMinter is
     event NFTMinted(address Account, uint256 NftType, uint256 NewId);
     event FTMinted(address Account, uint256 FtType, uint256 Amount);
     event NFTBatchMinted(address Account, uint256[] Ids);
+    event Withdrawal(address indexed owner, uint256 amount);
 
     // ------------------
     // Constructor
@@ -73,6 +75,17 @@ contract DraftMultiMinter is
     {
         baseMetadataURI = "https://turquoise-rear-loon-357.mypinata.cloud/ipfs/QmahUaDqT8b4dMcibzZJzVy2edV2rTU6sKDUqcNavJEMJ7/";
     }
+
+    /**
+     * @dev Allows the contract to receive Ether directly.
+     */
+    receive() external payable {}
+
+    /**
+     * @dev Fallback function to handle incoming Ether transactions.
+     *      It's executed when no other function matches the call.
+     */
+    fallback() external payable {}
 
     // ------------------
     // URI Management
@@ -259,6 +272,26 @@ contract DraftMultiMinter is
      */
     function contractURI() public pure returns (string memory collectionURI) {
         collectionURI = "https://turquoise-rear-loon-357.mypinata.cloud/ipfs/QmahUaDqT8b4dMcibzZJzVy2edV2rTU6sKDUqcNavJEMJ7/collection.json";
+    }
+
+    // ------------------
+    // Withdraw Functions
+    // ------------------
+
+    /**
+     * @dev Withdraws the contract's entire Ether balance to the owner's address.
+     *      Can only be called by the contract owner.
+     */
+    function withdraw() public onlyOwner {
+        uint256 balance = address(this).balance;
+        if (balance == 0) {
+            revert InsufficientBalance(0, balance);
+        }
+
+        (bool success, ) = msg.sender.call{value: balance}("");
+        require(success, "Withdrawal failed");
+
+        emit Withdrawal(msg.sender, balance);
     }
 
     // ------------------
