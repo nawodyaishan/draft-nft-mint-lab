@@ -11,6 +11,7 @@ EnvUtils.checkEnvVariables([
     "SEPOLIA_RPC_URL",
     "AVALANCHE_FUJI_RPC_URL",
     "PRIVATE_KEY",
+    "MUMBAI_FUJI_RPC_URL",
     "ETHERSCAN_API_KEY"
 ]);
 
@@ -20,6 +21,7 @@ const SEPOLIA_RPC_URL = process.env.SEPOLIA_RPC_URL!
 const AVALANCHE_FUJI_RPC_URL = process.env.AVALANCHE_FUJI_RPC_URL!
 const PRIVATE_KEY = process.env.PRIVATE_KEY!
 const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY!
+const MUMBAI_FUJI_RPC_URL = process.env.MUMBAI_FUJI_RPC_URL!
 const PUBLIC_KEY = process.env.PUBLIC_KEY!
 const deployedVerifiedContractAddress = "0x1f8800bcfaD9b4ab1eFe3e0c50bD455270471041"
 
@@ -39,6 +41,11 @@ const config: HardhatUserConfig = {
             url: AVALANCHE_FUJI_RPC_URL,
             accounts: [PRIVATE_KEY],
             chainId: 43113
+        },
+        mumbai: {
+            url: MUMBAI_FUJI_RPC_URL,
+            accounts: [PRIVATE_KEY],
+            chainId: 80001
         }
     }
 };

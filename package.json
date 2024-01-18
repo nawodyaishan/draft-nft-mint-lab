@@ -19,7 +19,9 @@
     "deploy:draftminter:fuji": "yarn hardhat run --network fuji scripts/deployDraftMinter.ts",
     "deploy:draftmultiminter:local": "yarn hardhat run --network hardhat scripts/deployDraftMultiMinter.ts",
     "deploy:draftmultiminter:sepolia": "yarn hardhat run --network sepolia scripts/deployDraftMultiMinter.ts",
-    "deploy:draftmultiminter:fuji": "yarn hardhat run --network fuji scripts/deployDraftMultiMinter.ts"
+    "deploy:draftmultiminter:fuji": "yarn hardhat run --network fuji scripts/deployDraftMultiMinter.ts",
+    "deploy:draftmultiminter:mumbai": "yarn hardhat run --network mumbai scripts/deployDraftMultiMinter.ts",
+    "verify:draftmultiminter:mumbai": "hardhat verify --network mumbai"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-chai-matchers": "^2.0.0",

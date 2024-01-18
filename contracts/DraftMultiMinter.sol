@@ -14,11 +14,11 @@ import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Supply.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 
 contract DraftMultiMinter is
-    ERC1155,
-    Ownable,
-    ERC1155Pausable,
-    ERC1155Burnable,
-    ERC1155Supply
+ERC1155,
+Ownable,
+ERC1155Pausable,
+ERC1155Burnable,
+ERC1155Supply
 {
     // ------------------
     // Constants and State Variables
@@ -30,6 +30,7 @@ contract DraftMultiMinter is
     uint256 private constant NFT_TYPE_END = 20000;
     uint256 private constant PLAYER_CARD_START = 1000; // Starting from 1000 for PLAYER_CARD
     uint256 private constant STADIUM_VILLAGE_START = 10000; // Starting from 10000 for STADIUM_VILLAGE_BUILDING
+    uint256 private constant MAX_NFT_SUPPLY = 5; // Maximum supply for each NFT type
 
     string private baseMetadataURI;
 
@@ -40,8 +41,8 @@ contract DraftMultiMinter is
         STADIUM_VILLAGE_BUILDING
     }
 
-    mapping(TokenType => uint256) private m_nftSupply;
-    mapping(TokenType => uint256) private m_maxNFTSupply; // Maximum supply for each NFT type
+    mapping(TokenType => uint256) private tokenTypeToId;
+    mapping(TokenType => uint256) private nftSupply;
 
     // ------------------
     // Custom Errors
@@ -51,7 +52,6 @@ contract DraftMultiMinter is
     error InvalidFTType(uint256 ftType);
     error InvalidNFTType(uint256 tokenType);
     error MaxNFTSupplyReached(TokenType tokenType);
-    error InsufficientBalance(uint256 requested, uint256 available);
 
     // ------------------
     // Events
@@ -61,31 +61,25 @@ contract DraftMultiMinter is
     event NFTMinted(address Account, uint256 NftType, uint256 NewId);
     event FTMinted(address Account, uint256 FtType, uint256 Amount);
     event NFTBatchMinted(address Account, uint256[] Ids);
-    event Withdrawal(address indexed owner, uint256 amount);
 
     // ------------------
     // Constructor
     // ------------------
 
     constructor()
-        ERC1155(
-            "https://turquoise-rear-loon-357.mypinata.cloud/ipfs/QmahUaDqT8b4dMcibzZJzVy2edV2rTU6sKDUqcNavJEMJ7/{id}.json"
-        )
-        Ownable(msg.sender)
+    ERC1155(
+    "https://turquoise-rear-loon-357.mypinata.cloud/ipfs/QmahUaDqT8b4dMcibzZJzVy2edV2rTU6sKDUqcNavJEMJ7/{id}.json"
+    )
+    Ownable(msg.sender)
     {
         baseMetadataURI = "https://turquoise-rear-loon-357.mypinata.cloud/ipfs/QmahUaDqT8b4dMcibzZJzVy2edV2rTU6sKDUqcNavJEMJ7/";
+        tokenTypeToId[TokenType.IN_GAME_CURRENCY] = FT_TYPE_START;
+        tokenTypeToId[TokenType.EXPERIENCE_BOOST] = FT_TYPE_START + 1;
+        tokenTypeToId[TokenType.PLAYER_CARD] = NFT_TYPE_START;
+        tokenTypeToId[TokenType.STADIUM_VILLAGE_BUILDING] =
+            NFT_TYPE_START +
+            10000;
     }
-
-    /**
-     * @dev Allows the contract to receive Ether directly.
-     */
-    receive() external payable {}
-
-    /**
-     * @dev Fallback function to handle incoming Ether transactions.
-     *      It's executed when no other function matches the call.
-     */
-    fallback() external payable {}
 
     // ------------------
     // URI Management
@@ -106,42 +100,29 @@ contract DraftMultiMinter is
      * @return string The metadata URI of the specified token ID.
      */
     function uri(uint256 tokenId) public view override returns (string memory) {
-        TokenType tokenType = getTokenTypeFromId(tokenId);
-
-        if (
-            tokenType == TokenType.IN_GAME_CURRENCY ||
-            tokenType == TokenType.EXPERIENCE_BOOST
-        ) {
-            // Handle fungible tokens (FTs)
+        if (tokenId >= FT_TYPE_START && tokenId <= FT_TYPE_END) {
             return
                 string(
-                    abi.encodePacked(
-                        baseMetadataURI,
-                        Strings.toString(tokenId),
-                        ".json"
-                    )
-                );
+                abi.encodePacked(
+                    baseMetadataURI,
+                    Strings.toString(tokenId),
+                    ".json"
+                )
+            );
         } else if (
-            tokenType == TokenType.PLAYER_CARD ||
-            tokenType == TokenType.STADIUM_VILLAGE_BUILDING
+            (tokenId >= PLAYER_CARD_START &&
+                tokenId < PLAYER_CARD_START + MAX_NFT_SUPPLY) ||
+            (tokenId >= STADIUM_VILLAGE_START &&
+                tokenId < STADIUM_VILLAGE_START + MAX_NFT_SUPPLY)
         ) {
-            // Handle non-fungible tokens (NFTs)
-            uint256 maxSupplyForType = m_maxNFTSupply[tokenType];
-            if (
-                (tokenId >= PLAYER_CARD_START &&
-                    tokenId < PLAYER_CARD_START + maxSupplyForType) ||
-                (tokenId >= STADIUM_VILLAGE_START &&
-                    tokenId < STADIUM_VILLAGE_START + maxSupplyForType)
-            ) {
-                return
-                    string(
-                        abi.encodePacked(
-                            baseMetadataURI,
-                            Strings.toString(tokenId),
-                            ".json"
-                        )
-                    );
-            }
+            return
+                string(
+                abi.encodePacked(
+                    baseMetadataURI,
+                    Strings.toString(tokenId),
+                    ".json"
+                )
+            );
         }
         revert InvalidTokenId(tokenId);
     }
@@ -149,23 +130,6 @@ contract DraftMultiMinter is
     // ------------------
     // Token Minting
     // ------------------
-
-    /**
-     * @dev Updates the maximum supply for a specific NFT type.
-     * @param tokenType The type of NFT.
-     * @param newMaxSupply The new maximum supply for the specified NFT type.
-     */
-    function updateMaxNFTSupply(
-        TokenType tokenType,
-        uint256 newMaxSupply
-    ) public onlyOwner {
-        require(
-            tokenType == TokenType.PLAYER_CARD ||
-                tokenType == TokenType.STADIUM_VILLAGE_BUILDING,
-            "Invalid NFT Type"
-        );
-        m_maxNFTSupply[tokenType] = newMaxSupply;
-    }
 
     /**
      * @dev Mints fungible tokens.
@@ -202,16 +166,14 @@ contract DraftMultiMinter is
             revert InvalidNFTType(tokenType);
         }
         TokenType typeEnum = TokenType(tokenType - 1);
-        uint256 currentSupply = m_nftSupply[typeEnum];
-        uint256 typeMaxSupply = m_maxNFTSupply[typeEnum];
-        if (currentSupply >= typeMaxSupply) {
+        uint256 currentSupply = nftSupply[typeEnum];
+        if (currentSupply >= MAX_NFT_SUPPLY) {
             revert MaxNFTSupplyReached(typeEnum);
         }
         uint256 tokenId = (
             tokenType == 3 ? PLAYER_CARD_START : STADIUM_VILLAGE_START
         ) + currentSupply;
-
-        m_nftSupply[typeEnum] = currentSupply + 1;
+        nftSupply[typeEnum] = currentSupply + 1;
         _mint(account, tokenId, 1, data);
         emit NFTMinted(account, tokenId, 1);
     }
@@ -223,28 +185,20 @@ contract DraftMultiMinter is
      */
     function getTokenTypeFromId(
         uint256 tokenId
-    ) public view returns (TokenType) {
+    ) public pure returns (TokenType) {
         if (tokenId == 1 || tokenId == 2) {
             return TokenType(tokenId - 1);
-        }
-
-        uint256 playerCardMaxSupply = m_maxNFTSupply[TokenType.PLAYER_CARD];
-        uint256 stadiumVillageMaxSupply = m_maxNFTSupply[
-            TokenType.STADIUM_VILLAGE_BUILDING
-        ];
-
-        if (
+        } else if (
             tokenId >= PLAYER_CARD_START &&
-            tokenId < PLAYER_CARD_START + playerCardMaxSupply
+            tokenId < PLAYER_CARD_START + MAX_NFT_SUPPLY
         ) {
             return TokenType.PLAYER_CARD;
         } else if (
             tokenId >= STADIUM_VILLAGE_START &&
-            tokenId < STADIUM_VILLAGE_START + stadiumVillageMaxSupply
+            tokenId < STADIUM_VILLAGE_START + MAX_NFT_SUPPLY
         ) {
             return TokenType.STADIUM_VILLAGE_BUILDING;
         }
-
         revert InvalidTokenId(tokenId);
     }
 
@@ -275,26 +229,6 @@ contract DraftMultiMinter is
     }
 
     // ------------------
-    // Withdraw Functions
-    // ------------------
-
-    /**
-     * @dev Withdraws the contract's entire Ether balance to the owner's address.
-     *      Can only be called by the contract owner.
-     */
-    function withdraw() public onlyOwner {
-        uint256 balance = address(this).balance;
-        if (balance == 0) {
-            revert InsufficientBalance(0, balance);
-        }
-
-        (bool success, ) = msg.sender.call{value: balance}("");
-        require(success, "Withdrawal failed");
-
-        emit Withdrawal(msg.sender, balance);
-    }
-
-    // ------------------
     // overrides
     // ------------------
 
@@ -319,30 +253,12 @@ contract DraftMultiMinter is
     // ------------------
 
     /**
-     * @dev Returns the total supply of tokens for a given ID.
-     *      For fungible tokens, the function returns the total supply of the token type.
-     *      For non-fungible tokens (NFTs), the function returns the total supply of the specific NFT ID.
-     *
-     * @param id The ID of the token. This can be an ID for a fungible token (FT) or a non-fungible token (NFT).
-     *           For FTs, this corresponds to the type of token (e.g., IN_GAME_CURRENCY or EXPERIENCE_BOOST).
-     *           For NFTs, this corresponds to the unique ID of the specific NFT.
-     *
-     * @return uint256 The total supply of the specified token ID.
-     *                 If the ID represents a fungible token, it returns the total supply of that token type.
-     *                 If the ID represents a non-fungible token, it returns 1 if the token exists (since each NFT is unique).
+     * @dev Gets the token ID for a given token type.
+     * @param tokenType The TokenType for which to get the ID.
+     * @return uint256 The token ID associated with the given token type.
      */
-    function totalSupply(
-        uint256 id
-    ) public view override(ERC1155Supply) returns (uint256) {
-        TokenType tokenType = getTokenTypeFromId(id);
-        if (
-            tokenType == TokenType.STADIUM_VILLAGE_BUILDING ||
-            tokenType == TokenType.PLAYER_CARD
-        ) {
-            return super.totalSupply(id);
-        }
-        uint256 tokenTypeId = uint256(tokenType);
-        return super.totalSupply(tokenTypeId);
+    function getTokenId(TokenType tokenType) public view returns (uint256) {
+        return tokenTypeToId[tokenType];
     }
 
     /**
@@ -355,26 +271,10 @@ contract DraftMultiMinter is
     ) public view returns (uint256) {
         require(
             tokenType == TokenType.PLAYER_CARD ||
-                tokenType == TokenType.STADIUM_VILLAGE_BUILDING,
+            tokenType == TokenType.STADIUM_VILLAGE_BUILDING,
             "Invalid NFT Type"
         );
-        return m_nftSupply[tokenType];
-    }
-
-    /**
-     * @dev Gets the maximum supply limit for a specific NFT type.
-     * @param tokenType The TokenType for which to get the maximum supply limit.
-     * @return uint256 The maximum supply limit for the specified NFT type.
-     */
-    function getMaxNFTSupply(
-        TokenType tokenType
-    ) public view returns (uint256) {
-        require(
-            tokenType == TokenType.PLAYER_CARD ||
-                tokenType == TokenType.STADIUM_VILLAGE_BUILDING,
-            "Invalid NFT Type"
-        );
-        return m_maxNFTSupply[tokenType];
+        return nftSupply[tokenType];
     }
 
     /**
