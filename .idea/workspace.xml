@@ -4,19 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1de01dba-59ce-47b0-9d6c-4f15a8ccf782" name="Changes" comment="">
+    <list default="true" id="1de01dba-59ce-47b0-9d6c-4f15a8ccf782" name="Changes" comment="feat: add mumbai to config">
+      <change beforePath="$PROJECT_DIR$/.env.example" beforeDir="false" afterPath="$PROJECT_DIR$/.env.example" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/contracts/DraftMultiMinter.sol" beforeDir="false" afterPath="$PROJECT_DIR$/contracts/DraftMultiMinter.sol" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/constants/constants.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/constants/constants.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/pages/_app.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/pages/_app.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/pages/api/mintNFT.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/pages/api/mintNFT.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/pages/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/pages/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/pnpm-lock.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/pnpm-lock.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/styles/Home.module.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/styles/Home.module.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/styles/globals.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/styles/globals.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hardhat.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/hardhat.config.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/DraftMinter.ts" beforeDir="false" afterPath="$PROJECT_DIR$/test/DraftMinter.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -148,7 +140,11 @@
       <workItem from="1705522652100" duration="6638000" />
       <workItem from="1705553330941" duration="8126000" />
       <workItem from="1705568147361" duration="11000" />
-      <workItem from="1705568531201" duration="314000" />
+      <workItem from="1705568531201" duration="3799000" />
+      <workItem from="1705595977875" duration="352000" />
+      <workItem from="1706624030486" duration="1488000" />
+      <workItem from="1706686814933" duration="477000" />
+      <workItem from="1706687989617" duration="437000" />
     </task>
     <task id="LOCAL-00001" summary="feat: update mint nft supply logic">
       <option name="closed" value="true" />
@@ -230,7 +226,15 @@
       <option name="project" value="LOCAL" />
       <updated>1705567200145</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="feat: add mumbai to config">
+      <option name="closed" value="true" />
+      <created>1705568863425</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1705568863425</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -259,7 +263,8 @@
     <MESSAGE value="feat: improve supply management" />
     <MESSAGE value="feat: improve ether payment management" />
     <MESSAGE value="feat: add thirdweb frontend next js app" />
-    <option name="LAST_COMMIT_MESSAGE" value="feat: add thirdweb frontend next js app" />
+    <MESSAGE value="feat: add mumbai to config" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat: add mumbai to config" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
